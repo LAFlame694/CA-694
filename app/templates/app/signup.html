@@ -1,0 +1,92 @@
+{% extends 'app/base.html' %}
+<!---->
+
+{% block title %}Sign Up{% endblock %}
+<!---->
+{% block content %}
+<div class="top-cover">
+  <div class="bg-overlay">
+    <div class="container">
+      <div class="signup_container">
+        <div class="signup_title">
+          <span>Sign Up</span>
+        </div>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="input_wrapper">
+            {{ form.username }}
+            <label for="{{ form.username.id_for_label }}" class="label"
+              >Username</label
+            >
+            <i class="fa-regular fa-user icon"></i>
+            {{ form.username.help_text|safe }}
+          </div>
+
+          <div class="input_wrapper">
+            {{ form.first_name }}
+            <label for="{{ form.first_name.id_for_label }}" class="label"
+              >First Name</label
+            >
+            <i class="fa-regular fa-id-card icon"></i>
+          </div>
+
+          <div class="input_wrapper">
+            {{ form.last_name }}
+            <label for="{{ form.last_name.id_for_label }}" class="label"
+              >Last Name</label
+            >
+            <i class="fa-regular fa-id-card icon"></i>
+          </div>
+
+          <div class="input_wrapper">
+            {{ form.email }}
+            <label for="{{ form.email.id_for_label }}" class="label"
+              >Email Address</label
+            >
+            <i class="fa-regular fa-envelope icon"></i>
+          </div>
+
+          <div class="input_wrapper">
+            {{ form.phone_number }}
+            <label for="{{ form.phone_number.id_for_label }}" class="label"
+              >Phone Number</label
+            >
+            <i class="fa-solid fa-phone icon"></i>
+          </div>
+
+          <div class="input_wrapper">
+            {{ form.password1 }}
+            <label for="{{ form.password1.id_for_label }}" class="label"
+              >Password</label
+            >
+            <i class="fa-solid fa-lock icon"></i>
+            {{ form.password1.help_text|safe }}
+          </div>
+
+          <div class="input_wrapper">
+            {{ form.password2 }}
+            <label for="{{ form.password2.id_for_label }}" class="label"
+              >Confirm Password</label
+            >
+            <i class="fa-solid fa-lock icon"></i>
+            {{ form.password2.help_text|safe }}
+          </div>
+
+          <div class="input_wrapper">
+            <button type="submit" class="input-submit">Sign Up</button>
+          </div>
+
+          <div class="login-link">
+            <span>
+              Already have an account?
+              <a href="{% url 'login' %}">Login</a>
+            </span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

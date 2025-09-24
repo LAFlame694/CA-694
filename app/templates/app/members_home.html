@@ -1,0 +1,23 @@
+{% extends 'app/base.html' %}
+<!---->
+{% block title %}Group Members{% endblock %}
+<!---->
+{% block content %}
+<section class="contribution section">
+  <div class="container-wrapper">
+    <h2>My Chamas</h2>
+    {% if user_chamas %}
+    <ul>
+      {% for chama in user_chamas %}
+      <li>
+        <a href="{% url 'chama_members' chama.id %}"> {{ chama.name }} </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>You are not a member of any chama yet.</p>
+
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

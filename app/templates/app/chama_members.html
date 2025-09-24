@@ -1,0 +1,28 @@
+{% extends 'app/base.html' %}
+<!---->
+{% block title %}Group Members{% endblock %}
+<!---->
+{% block content %}
+<section class="contribution section">
+  <div class="container-wrapper">
+    <h2>Members of {{ chama.name }}</h2>
+
+    <table border="1">
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Joined On</th>
+      </tr>
+      {% for member in members %}
+      <tr>
+        <td>{{ member.user.username }}</td>
+        <td>{{ member.user.email }}</td>
+        <td>{{ member.joined_at }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <a href="{% url 'members_home' %}">⬅ Back to My Chamas</a>
+  </div>
+</section>
+{% endblock %}

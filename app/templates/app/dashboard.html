@@ -1,0 +1,66 @@
+{% extends 'app/base.html' %}
+<!---->
+{% block title %}Dashboard{% endblock %}
+<!---->
+{% block content %}
+<section class="home section">
+  <div class="container-wrapper">
+    <div class="dashboard">
+      <h4>Dashboard</h4>
+      <button class="btn">Add Contribution</button>
+    </div>
+    <div class="dashboard-wrapper">
+      <div class="dashboard-item">
+        <h4>Total Chama Savings</h4>
+        <p>Ksh 125, 000</p>
+      </div>
+      <div class="dashboard-item">
+        <h4>My Contributions</h4>
+        <p>Ksh 1500</p>
+      </div>
+      <div class="dashboard-item">
+        <h4>Next Meeting</h4>
+        <p>15 Sep 2025</p>
+      </div>
+    </div>
+    <div class="contributions-content">
+      <div class="contributions-title">
+        <h4>Contributions</h4>
+      </div>
+      <div class="contributions-wrapper">
+        <div class="contributions">
+          <table border="1" class="table table-striped">
+            <tr>
+              <th>Date</th>
+              <th>Member</th>
+              <th>Chama</th>
+              <th>Amount</th>
+              <th>Payment Method</th>
+            </tr>
+            {% for contribution in latest_contributions %}
+            <tr>
+              <td>{{ contribution.date|date:"d M Y" }}</td>
+              <td>{{ contribution.member.user.username }}</td>
+              <td>{{ contribution.member.chama.name }}</td>
+              <td>Ksh {{ contribution.amount }}</td>
+              <td>{{ contribution.payment_method }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5">No Contributions</td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+        <div class="action-btns">
+          <div class="action-btns-wrapper">
+            <a href="{% url 'create_chama' %}" class="btn">Create Chama</a>
+            <a href="#" class="btn">Add Member</a>
+            <a href="#" class="btn">Add Contribution</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

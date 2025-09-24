@@ -1,0 +1,28 @@
+{% extends 'app/base.html' %}
+<!---->
+{% block title %}Contributions Overview{% endblock %}
+<!---->
+{% block content %}
+<section class="contribution section">
+  <div class="container-wrapper">
+    <h2>Your Groups</h2>
+    <ul class="list-group">
+      {% for membership in memberships %}
+      <li
+        class="list-group-item d-flex justify-content-between align-items-center"
+      >
+        {{ membership.chama.name }}
+        <a
+          href="{% url 'contributions_list' membership.chama.id %}"
+          class="btn"
+        >
+          View Contributions
+        </a>
+      </li>
+      {% empty %}
+      <li class="list-group-item">You don’t belong to any chama yet.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endblock %}
