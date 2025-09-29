@@ -1,9 +1,23 @@
 {% extends "app/base.html" %}
+<!---->
 {% block content %}
-<h2>Add Member to {{ chama.name }}</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Add Member</button>
-</form>
+<section class="add-member section">
+  <div class="container-wrapper">
+    <h2>Add Member to {{ chama.name }}</h2>
+
+    <form method="post" class="member-form">
+      {% csrf_token %}
+
+      <div class="form-group">
+        {{ form.email.label_tag }}
+        {{ form.email }}
+        {% if form.email.errors %}
+          <div class="error">{{ form.email.errors }}</div>
+        {% endif %}
+      </div>
+
+      <button type="submit" class="btn btn-primary">Add Member</button>
+    </form>
+  </div>
+</section>
 {% endblock %}

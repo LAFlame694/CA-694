@@ -75,6 +75,24 @@
     </div>
     <!-- Aside End -->
 
+    {% if messages %}
+    <!---->
+    {% for message in messages %}
+    <div
+      class="alert alert-warning alert-dismissible fade show messages"
+      role="alert"
+    >
+      {{ message }}
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endfor %}
+    <!---->
+    {% endif %}
     <!-- main-content start -->
     <div class="main-content">
       {% block content %}
@@ -82,5 +100,6 @@
       {% endblock %}
     </div>
     <!-- main-content end -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

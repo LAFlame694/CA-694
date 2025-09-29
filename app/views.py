@@ -13,14 +13,14 @@ User = get_user_model()
 # Create your views here.
 @login_required
 def members_home(request):
-    # get all chamas the user belongs to
-    user_chamas = Chama.objects.filter(members__user=request.user)
+    # get all memberships for this user (so you can access chama + role)
+    memberships = Member.objects.filter(user=request.user).select_related("chama")
 
     context = {
-        'user_chamas': user_chamas
+        'memberships': memberships
     }
-
     return render(request, 'app/members_home.html', context)
+
 
 @login_required
 def chama_members(request, chama_id):
@@ -80,12 +80,12 @@ def add_contribution(request, chama_id):
         return redirect('dashboard') # unauthorised
 
     if request.method == 'POST':
-        form = ContributionForm(request.POST)
+        form = ContributionForm(request.POST, chama=chama)
         if form.is_valid():
             contribution = form.save()
             return redirect('dashboard')
     else:
-        form = ContributionForm()
+        form = ContributionForm(chama=chama)
 
     return render(
         request,
@@ -212,6 +212,7 @@ def login_view(request):
         )
         if user is not None:
             login(request, user)
+            messages.success(request, "You have being logged in successfully.")
             return redirect('dashboard')
     return render(request, 'app/login.html')
 

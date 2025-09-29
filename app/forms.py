@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
-from .models import CustomUser, Chama, Contribution
+from .models import CustomUser, Chama, Contribution, Member
+from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -15,8 +16,38 @@ class ContributionForm(forms.ModelForm):
             'payment_method'
         ]
 
+        labels = {
+            'member': 'Select Member',
+            'amount': 'Contribution Amount',
+            'payment_method': 'Payment Method'
+        }
+
+        widgets = {
+            'member': forms.Select(attrs={'class': 'form-control'}),
+            'amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Amount'}),
+            'payment_method': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        chama = kwargs.pop('chama', None) # get chama passed from view
+        super().__init__(*args, **kwargs)
+        if chama:
+            self.fields['member'].queryset = Member.objects.filter(chama=chama)
+    
+    def clean_amount(self):
+        amount = self.cleaned_data.get('amount')
+        if amount is not None and amount <= 0:
+            raise ValidationError("Contribution amount must be greater than zero.")
+        return amount
+
 class AddMemberForm(forms.Form):
-    email = forms.EmailField(label='Member Email')
+    email = forms.EmailField(
+        label='Member Email',
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter member email'
+        })
+    )
 
     def clean_email(self):
         email = self.cleaned_data['email']

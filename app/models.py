@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.core.validators import MinValueValidator
 
 # Create your models here.
 class Contribution(models.Model):
@@ -11,7 +12,7 @@ class Contribution(models.Model):
     ]
 
     member = models.ForeignKey('Member', on_delete=models.CASCADE, related_name='contributions')
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(1)])
     date = models.DateTimeField(auto_now_add=True)
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
 

@@ -1,32 +1,38 @@
 {% extends "app/base.html" %}
 <!---->
+{% block title %}Contributions List{% endblock %}
+<!---->
 {% block content %}
-<h2>Contributions for {{ chama.name }}</h2>
+<section class="contribution section">
+  <div class="container-wrapper">
+    <h2>Contributions for {{ chama.name }}</h2>
 
-<table border="1" cellpadding="8" cellspacing="0">
-  <thead>
-    <tr>
-      <th>Member</th>
-      <th>Amount</th>
-      <th>Date</th>
-      <th>Payment Method</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for contribution in contributions %}
-    <tr>
-      <td>{{ contribution.member.user.username }}</td>
-      <td>{{ contribution.amount }}</td>
-      <td>{{ contribution.date }}</td>
-      <td>{{ contribution.payment_method }}</td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="4">No contributions yet.</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    <table border="1" class="table table-striped">
+      <thead>
+        <tr>
+          <th>Member</th>
+          <th>Amount</th>
+          <th>Date</th>
+          <th>Payment Method</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for contribution in contributions %}
+        <tr>
+          <td>{{ contribution.member.user.username }}</td>
+          <td>{{ contribution.amount }}</td>
+          <td>{{ contribution.date }}</td>
+          <td>{{ contribution.payment_method }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4">No contributions yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-<p><strong>Total Contributions: </strong> {{ total }}</p>
+    <p><strong>Total Contributions: </strong> {{ total }}</p>
+  </div>
+</section>
 {% endblock %}

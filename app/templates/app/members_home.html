@@ -6,17 +6,30 @@
 <section class="contribution section">
   <div class="container-wrapper">
     <h2>My Chamas</h2>
-    {% if user_chamas %}
-    <ul>
-      {% for chama in user_chamas %}
-      <li>
-        <a href="{% url 'chama_members' chama.id %}"> {{ chama.name }} </a>
+    {% if memberships %}
+    <ul class="list-group">
+      {% for membership in memberships %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <a href="{% url 'chama_members' membership.chama.id %}">
+          {{ membership.chama.name }}
+        </a>
+
+        <div>
+          {% if membership.role == "leader" %}
+            <span class="badge bg-warning text-dark">Leader</span>
+            <a href="{% url 'add_member' membership.chama.id %}" class="btn btn-sm btn-outline-primary ms-2">
+              <i class="fa-solid fa-plus"></i> Add Member
+            </a>
+          {% else %}
+            <span class="badge bg-secondary">Member</span>
+          {% endif %}
+        </div>
       </li>
+
       {% endfor %}
     </ul>
     {% else %}
     <p>You are not a member of any chama yet.</p>
-
     {% endif %}
   </div>
 </section>

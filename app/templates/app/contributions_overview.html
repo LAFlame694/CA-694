@@ -5,19 +5,29 @@
 {% block content %}
 <section class="contribution section">
   <div class="container-wrapper">
-    <h2>Your Groups</h2>
+    <h2>Your Chamas</h2>
     <ul class="list-group">
       {% for membership in memberships %}
       <li
         class="list-group-item d-flex justify-content-between align-items-center"
       >
-        {{ membership.chama.name }}
-        <a
-          href="{% url 'contributions_list' membership.chama.id %}"
-          class="btn"
-        >
-          View Contributions
-        </a>
+        <span>{{ membership.chama.name }}</span>
+        <div class="btn-toolbar d-flex gap-2">
+          {% if membership.role == 'leader' %}
+          <a
+            href="{% url 'add_contribution' membership.chama.id %}"
+            class="btn btn-sm btn-success"
+          >
+            Add Contribution
+          </a>
+          {% endif %}
+          <a
+            href="{% url 'contributions_list' membership.chama.id %}"
+            class="btn btn-sm btn-outline-primary"
+          >
+            View Contributions
+          </a>
+        </div>
       </li>
       {% empty %}
       <li class="list-group-item">You don’t belong to any chama yet.</li>

@@ -7,7 +7,9 @@
   <div class="container-wrapper">
     <div class="dashboard">
       <h4>Dashboard</h4>
-      <button class="btn">Add Contribution</button>
+      <a href="{% url 'create_chama' %}" class="btn btn-sm btn-outline-primary ms-2">
+        Create Chama
+      </a>
     </div>
     <div class="dashboard-wrapper">
       <div class="dashboard-item">
@@ -30,13 +32,15 @@
       <div class="contributions-wrapper">
         <div class="contributions">
           <table border="1" class="table table-striped">
-            <tr>
-              <th>Date</th>
-              <th>Member</th>
-              <th>Chama</th>
-              <th>Amount</th>
-              <th>Payment Method</th>
-            </tr>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Member</th>
+                <th>Chama</th>
+                <th>Amount</th>
+                <th>Payment Method</th>
+              </tr>
+            </thead>
             {% for contribution in latest_contributions %}
             <tr>
               <td>{{ contribution.date|date:"d M Y" }}</td>
@@ -51,13 +55,6 @@
             </tr>
             {% endfor %}
           </table>
-        </div>
-        <div class="action-btns">
-          <div class="action-btns-wrapper">
-            <a href="{% url 'create_chama' %}" class="btn">Create Chama</a>
-            <a href="#" class="btn">Add Member</a>
-            <a href="#" class="btn">Add Contribution</a>
-          </div>
         </div>
       </div>
     </div>
