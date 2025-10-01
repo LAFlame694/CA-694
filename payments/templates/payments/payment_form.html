@@ -1,0 +1,40 @@
+{% extends 'app/base.html' %}
+<!---->
+{% block title %}Make Payment{% endblock %}
+<!---->
+{% block content %}
+<!-- Display Error Message -->
+{% if error_message %}
+<div class="alert alert-danger" role="alert">{{ error_message }}</div>
+{% endif %}
+
+<!-- Display Success Message -->
+{% if success_message %}
+<div class="alert alert-success" role="alert">{{ success_message }}</div>
+{% endif %}
+
+<form
+  method="POST"
+  class="needs-validation"
+  novalidate
+  onsubmit="handleFormSubmit(event)"
+>
+  {% csrf_token %} {% for field in form %}
+  <div class="mb-3">{% bootstrap_field field %}</div>
+  {% endfor %}
+  <button
+    type="submit"
+    class="btn btn-success w-100 rounded-pill"
+    id="submitButton"
+  >
+    <span
+      id="spinner"
+      class="spinner-border spinner-border-sm"
+      role="status"
+      aria-hidden="true"
+      style="display: none"
+    ></span>
+    <span id="buttonText">Pay</span>
+  </button>
+</form>
+{% endblock %}

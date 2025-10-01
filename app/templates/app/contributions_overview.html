@@ -27,6 +27,12 @@
           >
             View Contributions
           </a>
+          <a
+            href="{% url 'contributions_list' membership.chama.id %}"
+            class="btn btn-sm btn-outline-primary"
+          >
+            Make Payments
+          </a>
         </div>
       </li>
       {% empty %}
