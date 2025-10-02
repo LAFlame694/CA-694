@@ -6,6 +6,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from .models import Transaction
 from .forms import PaymentForm
 from dotenv import load_dotenv
+from django.conf import settings
 
 from app.models import Chama
 
@@ -13,13 +14,13 @@ from app.models import Chama
 load_dotenv()
 
 # Retrieve variables from the environment
-CONSUMER_KEY = os.getenv("CONSUMER_KEY")
-CONSUMER_SECRET = os.getenv("CONSUMER_SECRET")
-MPESA_PASSKEY = os.getenv("MPESA_PASSKEY")
+CONSUMER_KEY = settings.CONSUMER_KEY
+CONSUMER_SECRET = settings.CONSUMER_SECRET
+MPESA_PASSKEY = settings.MPESA_PASSKEY
 
-MPESA_SHORTCODE = os.getenv("MPESA_SHORTCODE")
-CALLBACK_URL = os.getenv("CALLBACK_URL")
-MPESA_BASE_URL = os.getenv("MPESA_BASE_URL")
+MPESA_SHORTCODE = settings.MPESA_SHORTCODE
+CALLBACK_URL = settings.CALLBACK_URL
+MPESA_BASE_URL = settings.MPESA_BASE_URL
 
 # Phone number formatting and validation
 def format_phone_number(phone):
@@ -109,22 +110,22 @@ def payment_view(request, chama_id):
                     checkout_request_id = response["CheckoutRequestID"]
                     return render(
                         request,
-                        "pending.html",
+                        "payments/pending.html",
                         {"checkout_request_id": checkout_request_id, "chama": chama},
                     )
                 else:
                     error_message = response.get("errorMessage", "Failed to send STK push. Please try again.")
-                    return render(request, "payment_form.html", {"form": form, "error_message": error_message, "chama": chama})
+                    return render(request, "payments/payment_form.html", {"form": form, "error_message": error_message, "chama": chama})
 
             except ValueError as e:
-                return render(request, "payment_form.html", {"form": form, "error_message": str(e), "chama": chama})
+                return render(request, "payments/payment_form.html", {"form": form, "error_message": str(e), "chama": chama})
             except Exception as e:
-                return render(request, "payment_form.html", {"form": form, "error_message": f"An unexpected error occurred: {str(e)}", "chama": chama})
+                return render(request, "payments/payment_form.html", {"form": form, "error_message": f"An unexpected error occurred: {str(e)}", "chama": chama})
 
     else:
         form = PaymentForm()
 
-    return render(request, "payment_form.html", {"form": form, "chama": chama})
+    return render(request, "payments/payment_form.html", {"form": form, "chama": chama})
 
 
 # Query STK Push status

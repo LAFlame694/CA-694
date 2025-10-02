@@ -1,0 +1,60 @@
+{% extends "app/base.html" %}
+<!---->
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center">Payment Pending</h2>
+  <p class="text-center">
+    An STK Push has been sent to your phone. Please enter your M-Pesa PIN to
+    complete the payment.
+  </p>
+
+  <div id="status-box" class="alert alert-info text-center">
+    Waiting for confirmation...
+  </div>
+
+  <div class="text-center mt-3">
+    <a href="{% url 'payment_view' chama.id %}" class="btn btn-secondary">
+      Try Again
+    </a>
+  </div>
+</div>
+
+<script>
+  // Poll the server every 5 seconds to check status
+  function checkStatus() {
+    fetch("{% url 'stk_status_view' %}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+      body: JSON.stringify({
+        checkout_request_id: "{{ checkout_request_id }}",
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        let statusBox = document.getElementById("status-box");
+        let status = data.status;
+
+        if (status.error) {
+          statusBox.className = "alert alert-danger text-center";
+          statusBox.innerText = "Error: " + status.error;
+        } else if (status.ResultCode === "0") {
+          statusBox.className = "alert alert-success text-center";
+          statusBox.innerText = "✅ Payment Successful!";
+          clearInterval(interval); // stop polling
+        } else if (status.ResultCode) {
+          statusBox.className = "alert alert-warning text-center";
+          statusBox.innerText = "⚠️ Payment Failed: " + status.ResultDesc;
+          clearInterval(interval);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
+
+  let interval = setInterval(checkStatus, 5000);
+</script>
+{% endblock %}
