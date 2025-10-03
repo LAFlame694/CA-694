@@ -7,8 +7,10 @@ from .models import Transaction
 from .forms import PaymentForm
 from dotenv import load_dotenv
 from django.conf import settings
+from django.utils.timezone import make_aware
+from decimal import Decimal
 
-from app.models import Chama
+from app.models import Chama, Member, Contribution, CustomUser, VirtualAccount
 
 # Load environment variables
 load_dotenv()
@@ -178,7 +180,7 @@ def stk_status_view(request):
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
-@csrf_exempt  # To allow POST requests from external sources like M-Pesa
+@csrf_exempt
 def payment_callback(request):
     if request.method != "POST":
         return HttpResponseBadRequest("Only POST requests are allowed")
@@ -202,8 +204,11 @@ def payment_callback(request):
             except Chama.DoesNotExist:
                 return JsonResponse({"ResultCode": 1, "ResultDesc": "Invalid account reference"})
 
+            # find member by phone
+            member = Member.objects.filter(chama=chama, user__phone_number=phone).first()
+
             # save transaction
-            Transaction.objects.create(
+            transaction = Transaction.objects.create(
                 chama=chama,
                 amount=amount,
                 checkout_id=checkout_id,
@@ -211,6 +216,34 @@ def payment_callback(request):
                 phone_number=phone,
                 status="Success",
             )
+
+            # create contribution if member exists
+            if member:
+                Contribution.objects.create(
+                    member=member,
+                    amount=amount,
+                    payment_method="mpesa",
+                )
+
+                # update virtual account balance
+                account, _ = VirtualAccount.objects.get_or_create(
+                    chama=chama,
+                    member=member,
+                    defaults={"account_number": f"{chama.account_number}{member.id}"}
+                )
+                account.balance += Decimal(amount)
+                account.save()
+
+            else:
+                # fallback: credit chama main account if no member match
+                account, _ = VirtualAccount.objects.get_or_create(
+                    chama=chama,
+                    member=None,
+                    defaults={"account_number": chama.account_number}
+                )
+                account.balance += Decimal(amount)
+                account.save()
+
             return JsonResponse({"ResultCode": 0, "ResultDesc": "Payment successful"})
 
         return JsonResponse({"ResultCode": result_code, "ResultDesc": "Payment failed"})

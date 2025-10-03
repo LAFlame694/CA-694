@@ -6,11 +6,34 @@ from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.db.models import Sum
 
-from .models import Chama, Member, CustomUser, Contribution
+from .models import Chama, Member, CustomUser, Contribution, VirtualAccount
+from payments.models import Transaction
 
 User = get_user_model()
 
 # Create your views here.
+def transaction_list(request):
+    # get all chamas the user belongs to
+    memberships = Member.objects.filter(user=request.user)
+    chama_ids = memberships.values_list('chama_id', flat=True)
+
+    # filter transactions for these chamas
+    transactions = Transaction.objects.filter(chama_id__in=chama_ids).order_by('-timestamp')
+    return render(request, "app/transactions.html", {"transactions": transactions})
+
+def accounts_view(request):
+    memberships = Member.objects.filter(user=request.user)
+    chamas = [m.chama for m in memberships]
+    accounts = []
+    for chama in chamas:
+        main_account = VirtualAccount.objects.filter(chama=chama, member=None).first()
+        accounts.append({
+            "chama": chama,
+            "account_number": main_account.account_number if main_account else chama.account_number,
+            "balance": main_account.balance if main_account else 0
+        })
+    return render(request, "app/accounts.html", {"accounts": accounts})
+
 @login_required
 def members_home(request):
     # get all memberships for this user (so you can access chama + role)

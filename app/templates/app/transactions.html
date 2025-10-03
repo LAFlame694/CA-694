@@ -1,0 +1,33 @@
+{% extends 'app/base.html' %}
+<!---->
+{% block content %}
+<h2>My Transactions</h2>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Chama</th>
+      <th>Amount</th>
+      <th>Phone</th>
+      <th>Status</th>
+      <th>Mpesa Code</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for txn in transactions %}
+    <tr>
+      <td>{{ txn.timestamp|date:"Y-m-d H:i" }}</td>
+      <td>{{ txn.chama.name }}</td>
+      <td>{{ txn.amount }}</td>
+      <td>{{ txn.phone_number }}</td>
+      <td>{{ txn.status }}</td>
+      <td>{{ txn.mpesa_code }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="6">No transactions found.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

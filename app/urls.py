@@ -15,6 +15,8 @@ urlpatterns = [
     path('contributions/', views.contributions_overview, name='contributions_overview'),
     path("members/", views.members_home, name="members_home"),
     path("members/<int:chama_id>/", views.chama_members, name="chama_members"),
+    path('accounts/', views.accounts_view, name='accounts'),
+    path("transactions/", views.transaction_list, name="transactions"),
 
 
     # password reset

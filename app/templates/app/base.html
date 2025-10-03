@@ -42,13 +42,23 @@
 
         <li>
           <a href="{% url 'contributions_overview' %}"
-            ><i class="fa fa-solid fa-dollar-sign"></i> Contributions</a
+            ><i class="fa-solid fa-building-columns"></i> Contributions</a
           >
         </li>
 
         <li>
-          <a href="#"
-            ><i class="fa fa-solid fa-money-bill-transfer"></i> Withdrawals</a
+          <a href="#"><i class="fa-solid fa-arrow-down"></i> Withdrawals</a>
+        </li>
+
+        <li>
+          <a href="{% url 'transactions' %}"
+            ><i class="fa-solid fa-money-bill-transfer"></i> Transactions</a
+          >
+        </li>
+
+        <li>
+          <a href="{% url 'accounts' %}"
+            ><i class="fa-solid fa-dollar-sign"></i> Accounts</a
           >
         </li>
 

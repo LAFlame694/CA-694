@@ -5,6 +5,19 @@ from django.core.validators import MinValueValidator
 import uuid
 
 # Create your models here.
+class VirtualAccount(models.Model):
+    chama = models.ForeignKey("Chama", on_delete=models.CASCADE, related_name="virtual_accounts")
+    member = models.ForeignKey("Member", on_delete=models.CASCADE, related_name="virtual_accounts", null=True, blank=True)
+    balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+
+    # use chama.account_number
+    account_number = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        if self.member:
+            return f"{self.chama.name} - {self.member.user.username} {self.account_number}"
+        return f"{self.chama.name} Main Account ({self.account_number})"
+
 class Contribution(models.Model):
     PAYMENT_METHODS = [
         ('cash', 'Cash'),
