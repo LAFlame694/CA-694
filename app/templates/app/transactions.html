@@ -1,33 +1,84 @@
 {% extends 'app/base.html' %}
 <!---->
 {% block content %}
-<h2>My Transactions</h2>
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th>Date</th>
-      <th>Chama</th>
-      <th>Amount</th>
-      <th>Phone</th>
-      <th>Status</th>
-      <th>Mpesa Code</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for txn in transactions %}
-    <tr>
-      <td>{{ txn.timestamp|date:"Y-m-d H:i" }}</td>
-      <td>{{ txn.chama.name }}</td>
-      <td>{{ txn.amount }}</td>
-      <td>{{ txn.phone_number }}</td>
-      <td>{{ txn.status }}</td>
-      <td>{{ txn.mpesa_code }}</td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="6">No transactions found.</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="container-fluid mt-4">
+  <h2 class="mb-3">My Transactions</h2>
+
+  <!-- Filter Toggle -->
+  <div class="btn-group mb-3">
+    <a
+      href="?type=all"
+      class="btn btn-outline-primary {% if filter_type == 'all' %}active{% endif %}"
+      >All</a
+    >
+    <a
+      href="?type=deposit"
+      class="btn btn-outline-success {% if filter_type == 'deposit' %}active{% endif %}"
+      >Deposits</a
+    >
+    <a
+      href="?type=withdrawal"
+      class="btn btn-outline-danger {% if filter_type == 'withdrawal' %}active{% endif %}"
+      >Withdrawals</a
+    >
+  </div>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Chama</th>
+        <th>Amount (KES)</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Mpesa Code</th>
+        <th>Reference No</th>
+        <th>Initiator</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for txn in transactions %}
+      <tr>
+        <td>{{ txn.timestamp|date:"Y-m-d H:i" }}</td>
+        <td>{{ txn.chama.name }}</td>
+        <td>{{ txn.amount }}</td>
+        <td>{{ txn.transaction_type|title }}</td>
+        <td>{{ txn.status }}</td>
+        <td>{{ txn.mpesa_code|default:"—" }}</td>
+        <td>
+          {% for log in audit_logs %}
+          <!---->
+          {% if log.transaction.id == txn.id %}
+          <!---->
+          {{ log.reference_no }}
+          <!---->
+          {% endif %}
+          <!---->
+          {% endfor %}
+        </td>
+
+        <td>
+          {% if txn.member %}
+          <!---->
+          {{ txn.member.user.username }}
+          <!---->
+          {% elif txn.initiated_by %}
+          <!---->
+          {{ txn.initiated_by }}
+          <!---->
+          {% else %}
+          <!---->
+          Uknown
+          <!---->
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" class="text-center">No transactions found.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

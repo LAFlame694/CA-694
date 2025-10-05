@@ -23,6 +23,13 @@
           class="btn btn-primary btn-sm"
           >Make Payment</a
         >
+        {% if acc.is_leader %}
+        <a
+          href="{% url 'withdraw' acc.chama.id %}"
+          class="btn btn-sm btn-danger"
+          >Withdraw</a
+        >
+        {% endif %}
       </td>
     </tr>
     {% endfor %}

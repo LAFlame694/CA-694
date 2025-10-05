@@ -5,13 +5,103 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.db.models import Sum
+from decimal import Decimal
+from django.db import transaction
 
 from .models import Chama, Member, CustomUser, Contribution, VirtualAccount
-from payments.models import Transaction
+from payments.models import Transaction, AuditLog
 
 User = get_user_model()
 
 # Create your views here.
+def transactions_view(request):
+    # get the user's chamas
+    memberships = Member.objects.filter(user=request.user)
+    chamas = [m.chama for m in memberships]
+
+    # get all transactions and audit logs for those chamas
+    transactions = Transaction.objects.filter(chama__in=chamas).order_by('-timestamp')
+    audit_logs = AuditLog.objects.filter(chama__in=chamas).order_by('-timestamp')
+
+    # handle filter toggle: deposit / withdrawal / all
+    filter_type = request.GET.get('type', 'all')
+
+    if filter_type == 'deposit':
+        transactions = transactions.filter(transaction_type='deposit')
+        audit_logs = audit_logs.filter(action_type='deposit')
+    elif filter_type == 'withdrawal':
+        transactions = transactions.filter(transaction_type='withdrawal')
+        audit_logs = audit_logs.filter(action_type='withdrawal')
+    
+    context = {
+        'transactions': transactions,
+        'audit_logs': audit_logs,
+        'filter_type': filter_type
+    }
+    return render(request, 'app/transactions.html', context)
+
+@login_required
+def withdraw_view(request, chama_id):
+    chama = get_object_or_404(Chama, id=chama_id)
+
+    # Verify if user is a leader of this chama
+    member = Member.objects.filter(user=request.user, chama=chama, role='leader').first()
+    if not member:
+        return render(request, "payments/withdraw_form.html", {
+            "chama": chama,
+            "error_message": "Only chama leaders can withdraw funds."
+        })
+
+    if request.method == 'POST':
+        try:
+            amount = Decimal(request.POST.get('amount'))
+            phone = request.POST.get('phone_number')
+
+            # Ensure valid amount
+            if amount <= 0:
+                return render(request, "payments/withdraw_form.html", {
+                    "chama": chama,
+                    "error_message": "Invalid withdrawal amount."
+                })
+
+            # Use atomic block to ensure balance + transaction integrity
+            with transaction.atomic():
+                account = VirtualAccount.objects.filter(chama=chama, member=None).select_for_update().first()
+                if not account or account.balance < amount:
+                    return render(request, "payments/withdraw_form.html", {
+                        "chama": chama,
+                        "error_message": "Insufficient balance."
+                    })
+
+                # Deduct from chama account
+                account.balance -= amount
+                account.save()
+
+                # Record withdrawal transaction
+                txn = Transaction.objects.create(
+                    chama=chama,
+                    member = member,
+                    initiated_by = request.user.username,
+                    amount=amount,
+                    checkout_id=f"WITHDRAW-{chama.id}-{request.user.id}-{Transaction.objects.count()+1}",
+                    mpesa_code=f"WDR{Transaction.objects.count()+1}",
+                    phone_number=phone,
+                    status="Simulated",
+                    transaction_type="withdrawal",
+                )
+                # AuditLog auto-created by signal, no manual log needed
+
+            # Redirect to transaction list after success
+            return redirect('transactions')
+
+        except Exception as e:
+            return render(request, "payments/withdraw_form.html", {
+                "chama": chama,
+                "error_message": f"Withdrawal failed: {str(e)}"
+            })
+
+    return render(request, "payments/withdraw_form.html", {"chama": chama})
+
 def transaction_list(request):
     # get all chamas the user belongs to
     memberships = Member.objects.filter(user=request.user)
@@ -25,12 +115,23 @@ def accounts_view(request):
     memberships = Member.objects.filter(user=request.user)
     chamas = [m.chama for m in memberships]
     accounts = []
+
     for chama in chamas:
+        # get the chama's main account
         main_account = VirtualAccount.objects.filter(chama=chama, member=None).first()
+
+        # check if the currrent user is the leader of this chama
+        is_leader = Member.objects.filter(
+            user = request.user,
+            chama = chama,
+            role = 'leader'
+        ).exists()
+
         accounts.append({
             "chama": chama,
             "account_number": main_account.account_number if main_account else chama.account_number,
-            "balance": main_account.balance if main_account else 0
+            "balance": main_account.balance if main_account else 0,
+            "is_leader": is_leader,
         })
     return render(request, "app/accounts.html", {"accounts": accounts})
 

@@ -3,12 +3,14 @@ from datetime import datetime
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponseBadRequest
-from .models import Transaction
+from .models import Transaction, AuditLog
 from .forms import PaymentForm
 from dotenv import load_dotenv
 from django.conf import settings
 from django.utils.timezone import make_aware
 from decimal import Decimal
+import uuid
+from django.db import transaction
 
 from app.models import Chama, Member, Contribution, CustomUser, VirtualAccount
 
@@ -189,64 +191,73 @@ def payment_callback(request):
         callback_data = json.loads(request.body)
         result_code = callback_data["Body"]["stkCallback"]["ResultCode"]
 
+        # Only process successful payments
         if result_code == 0:
             checkout_id = callback_data["Body"]["stkCallback"]["CheckoutRequestID"]
             metadata = callback_data["Body"]["stkCallback"]["CallbackMetadata"]["Item"]
 
-            amount = next(item["Value"] for item in metadata if item["Name"] == "Amount")
+            amount = Decimal(next(item["Value"] for item in metadata if item["Name"] == "Amount"))
             mpesa_code = next(item["Value"] for item in metadata if item["Name"] == "MpesaReceiptNumber")
             phone = next(item["Value"] for item in metadata if item["Name"] == "PhoneNumber")
             account_ref = next(item["Value"] for item in metadata if item["Name"] == "AccountReference")
 
-            # get chama by account number
+            # Get chama safely
             try:
                 chama = Chama.objects.get(account_number=account_ref)
             except Chama.DoesNotExist:
                 return JsonResponse({"ResultCode": 1, "ResultDesc": "Invalid account reference"})
 
-            # find member by phone
+            # Find member (optional)
             member = Member.objects.filter(chama=chama, user__phone_number=phone).first()
 
-            # save transaction
-            transaction = Transaction.objects.create(
-                chama=chama,
-                amount=amount,
-                checkout_id=checkout_id,
-                mpesa_code=mpesa_code,
-                phone_number=phone,
-                status="Success",
-            )
-
-            # create contribution if member exists
-            if member:
-                Contribution.objects.create(
-                    member=member,
+            # Wrap all operations inside an atomic transaction
+            with transaction.atomic():
+                # Save transaction
+                transaction_obj = Transaction.objects.create(
+                    chama=chama,
+                    member = member if member else None,
+                    initiated_by = member.user.username if member else "phone",
                     amount=amount,
-                    payment_method="mpesa",
+                    checkout_id=checkout_id,
+                    mpesa_code=mpesa_code,
+                    phone_number=phone,
+                    status="Success",
+                    transaction_type="deposit",
                 )
+                # AuditLog will be auto-created by the signal
 
-                # update virtual account balance
-                account, _ = VirtualAccount.objects.get_or_create(
-                    chama=chama,
-                    member=member,
-                    defaults={"account_number": f"{chama.account_number}{member.id}"}
-                )
-                account.balance += Decimal(amount)
-                account.save()
+                # Update virtual account and create contribution
+                if member:
+                    # If member exists → credit their account
+                    account, _ = VirtualAccount.objects.get_or_create(
+                        chama=chama,
+                        member=member,
+                        defaults={"account_number": f"{chama.account_number}{member.id}"}
+                    )
+                    account.balance += amount
+                    account.save()
 
-            else:
-                # fallback: credit chama main account if no member match
-                account, _ = VirtualAccount.objects.get_or_create(
-                    chama=chama,
-                    member=None,
-                    defaults={"account_number": chama.account_number}
-                )
-                account.balance += Decimal(amount)
-                account.save()
+                    Contribution.objects.create(
+                        member=member,
+                        amount=amount,
+                        payment_method="mpesa",
+                    )
+                else:
+                    # No member found → credit main chama account
+                    account, _ = VirtualAccount.objects.get_or_create(
+                        chama=chama,
+                        member=None,
+                        defaults={"account_number": chama.account_number}
+                    )
+                    account.balance += amount
+                    account.save()
 
             return JsonResponse({"ResultCode": 0, "ResultDesc": "Payment successful"})
 
+        # If not successful
         return JsonResponse({"ResultCode": result_code, "ResultDesc": "Payment failed"})
 
-    except (json.JSONDecodeError, KeyError) as e:
+    except (json.JSONDecodeError, KeyError, ValueError) as e:
         return HttpResponseBadRequest(f"Invalid request data: {str(e)}")
+    except Exception as e:
+        return HttpResponseBadRequest(f"Unexpected error: {str(e)}")

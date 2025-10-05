@@ -1,0 +1,36 @@
+{% extends 'app/base.html' %}
+<!---->
+{% block content %}
+<h3>Withdraw Funds from {{ chama.name }}</h3>
+
+{% if error_message %}
+<div class="alert alert-danger">{{ error_message }}</div>
+{% endif %}
+
+<form method="POST">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label for="phone">Phone Number</label>
+    <input
+      type="text"
+      name="phone_number"
+      id="phone"
+      class="form-control"
+      placeholder="e.g. 254700123456"
+      required
+    />
+  </div>
+  <div class="mb-3">
+    <label for="amount">Amount</label>
+    <input
+      type="number"
+      name="amount"
+      id="amount"
+      class="form-control"
+      placeholder="Enter amount"
+      required
+    />
+  </div>
+  <button type="submit" class="btn btn-danger">Withdraw</button>
+</form>
+{% endblock %}

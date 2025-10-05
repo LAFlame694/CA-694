@@ -16,7 +16,10 @@ urlpatterns = [
     path("members/", views.members_home, name="members_home"),
     path("members/<int:chama_id>/", views.chama_members, name="chama_members"),
     path('accounts/', views.accounts_view, name='accounts'),
-    path("transactions/", views.transaction_list, name="transactions"),
+    #path("transactions/", views.transaction_list, name="transactions"),
+    path('withdraw/<int:chama_id>/', views.withdraw_view, name='withdraw'),
+    path("transactions/", views.transactions_view, name="transactions"),
+
 
 
     # password reset
