@@ -68,10 +68,6 @@ body {
   transition: all 0.3s ease;
 }
 
-.messages {
-  padding-left: 270px;
-}
-
 .btn:hover {
   transform: scale(1.05);
   background-color: #6b7280;
@@ -79,7 +75,6 @@ body {
 }
 
 .section {
-  background-color: rgba(0, 0, 0, 0.2);
   min-height: 100vh;
   display: block;
   padding: 0 30px;
@@ -120,10 +115,6 @@ ul {
 
 a {
   text-decoration: none;
-}
-
-.main-content {
-  padding-left: 270px;
 }
 
 .container {
@@ -199,6 +190,7 @@ table {
   margin-top: 5px;
 }
 
+/* NavBar */
 
 /* dashboard */
 .dashboard {
@@ -247,61 +239,6 @@ table {
 
 .contributions-content .contributions-wrapper .action-btns .action-btns-wrapper a {
   width: 100%;
-}
-
-/* aside */
-.aside {
-  width: 270px;
-  background: var(--color-card);
-  position: fixed;
-  left: 0;
-  top: 0;
-  padding: 30px;
-  height: 100%;
-  border-right: 1px solid var(--color-text-light);
-  align-items: center;
-  z-index: 10;
-}
-
-.aside .nav {
-  display: block !important;
-  margin-top: 50px;
-}
-
-.aside .nav li {
-  margin-bottom: 20px;
-}
-
-.aside .logo-holder .logo {
-  top: 30px;
-  font-size: 30px;
-  text-transform: capitalize;
-}
-
-.aside .logo a {
-  color: var(--color-text-primary);
-  font-weight: 700;
-  padding: 5px 5px;
-  font-size: 30px;
-  letter-spacing: 5px;
-  position: relative;
-}
-
-.aside .logo a span {
-  font-family: "Clicker Script", cursive;
-  font-size: 40px;
-}
-
-.aside .logo-holder .username {
-  padding-top: 70px;
-}
-
-.aside .nav li a {
-  font-size: 16px;
-  font-weight: 600;
-  display: block;
-  color: var(--text-black-900);
-  padding: 5px 15px;
 }
 
 /* reset password form styling */

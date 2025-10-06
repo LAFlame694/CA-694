@@ -23,8 +23,7 @@
   <body>
     <!-- NavBar Start -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
-      <div class="container-fluid px-4 px-lg-5">
-        <a class="navbar-brand me-4" href="#">Chama App</a>
+      <div class="container-fluid">
         <button
           class="navbar-toggler"
           type="button"
@@ -37,44 +36,54 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarColor04">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item me-4">
+          <ul class="navbar-nav me-auto justify-content-between w-100">
+            <li class="nav-item">
               <a href="#"><i class="fa-solid fa-circle-user"></i> Profile</a>
             </li>
 
-            <li class="nav-item me-4">
+            <li class="nav-item">
               <a href="{% url 'dashboard' %}" class="active"
                 ><i class="fa fa-solid fa-house"></i> Dashboard</a
               >
             </li>
 
-            <li class="nav-item me-4">
+            <li class="nav-item">
+              <a href="{% url 'contributions_overview' %}"
+                ><i class="fa-solid fa-building-columns"></i> Contributions</a
+              >
+            </li>
+
+            <li class="nav-item">
+              <a href="#"><i class="fa-solid fa-arrow-down"></i> Withdrawals</a>
+            </li>
+
+            <li class="nav-item">
               <a href="{% url 'transactions' %}"
                 ><i class="fa-solid fa-money-bill-transfer"></i> Transactions</a
               >
             </li>
 
-            <li class="nav-item me-4">
+            <li class="nav-item">
               <a href="{% url 'accounts' %}"
                 ><i class="fa-solid fa-dollar-sign"></i> Accounts</a
               >
             </li>
 
-            <li class="nav-item me-4">
+            <li class="nav-item">
               <a href="{% url 'members_home' %}"
                 ><i class="fa fa-solid fa-users"></i> Members</a
               >
             </li>
 
             {% if request.user.is_authenticated %}
-            <li class="nav-item me-4">
+            <li class="nav-item">
               <a href="{% url 'logout' %}"
                 ><i class="fa fa-solid fa-right-from-bracket"></i> Logout</a
               >
             </li>
 
             {% else %}
-            <li class="nav-item me-4">
+            <li class="nav-item">
               <a href="{% url 'login' %}"
                 ><i class="fa fa-solid fa-right-from-bracket"></i> Login</a
               >
