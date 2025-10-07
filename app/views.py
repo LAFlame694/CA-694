@@ -285,6 +285,10 @@ def create_chama(request):
     return render(request, 'app/create_chama.html', {'form': form})
 
 # ====================================================================================================
+def about_view(request):
+    return render(request, 'app/about.html')
+
+# ====================================================================================================
 def home_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard')

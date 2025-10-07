@@ -20,6 +20,7 @@ urlpatterns = [
     #path("transactions/", views.transaction_list, name="transactions"),
     path('withdraw/<int:chama_id>/', views.withdraw_view, name='withdraw'),
     path("transactions/", views.transactions_view, name="transactions"),
+    path('about/', views.about_view, name='about'),
 
 
 

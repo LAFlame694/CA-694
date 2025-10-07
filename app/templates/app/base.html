@@ -41,42 +41,54 @@
             {% if request.user.is_authenticated %}
             <li class="nav-item me-4">
               <a href="{% url 'update_user' %}"
-                ><i class="fa-solid fa-circle-user"></i> Profile</a
+                ><i class="fa-solid fa-circle-user fa-lg"></i> Profile</a
               >
             </li>
+
             <li class="nav-item me-4">
               <a href="{% url 'dashboard' %}" class="active">
-                <i class="fa-solid fa-house"></i> Dashboard
+                <i class="fa-solid fa-house fa-lg"></i> Dashboard
               </a>
             </li>
+
             <li class="nav-item me-4">
               <a href="{% url 'transactions' %}">
-                <i class="fa-solid fa-money-bill-transfer"></i> Transactions
+                <i class="fa-solid fa-money-bill-transfer fa-lg"></i>
+                Transactions
               </a>
             </li>
+
             <li class="nav-item me-4">
               <a href="{% url 'accounts' %}">
-                <i class="fa-solid fa-dollar-sign"></i> Accounts
+                <i class="fa-solid fa-dollar-sign fa-lg"></i> Accounts
               </a>
             </li>
+
             <li class="nav-item me-4">
               <a href="{% url 'members_home' %}">
-                <i class="fa-solid fa-users"></i> Members
+                <i class="fa-solid fa-users fa-lg"></i> Members
               </a>
             </li>
 
             <li class="nav-item me-4">
               <a href="{% url 'logout' %}">
-                <i class="fa-solid fa-right-from-bracket"></i> Logout
+                <i class="fa-solid fa-right-from-bracket fa-lg"></i> Logout
               </a>
             </li>
+
             {% else %}
             <li class="nav-item me-4">
               <a href="{% url 'login' %}">
-                <i class="fa-solid fa-right-from-bracket"></i> Login
+                <i class="fa-solid fa-right-from-bracket fa-lg"></i> Login
               </a>
             </li>
             {% endif %}
+
+            <li class="nav-item me-4">
+              <a href="{% url 'about' %}">
+                <i class="fa-solid fa-circle-info fa-lg"></i> About Us
+              </a>
+            </li>
           </ul>
         </div>
       </div>

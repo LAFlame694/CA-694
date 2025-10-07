@@ -1,0 +1,47 @@
+{% extends "app/base.html" %}
+<!---->
+{% load static %}
+<!---->
+{% block title %}About Us{% endblock %}
+<!---->
+{% block content %}
+<div class="container">
+  <div class="text-center mb-4">
+    <h2>About ChamaApp</h2>
+    <p class="text-muted">
+      Empowering groups to save, invest, and grow together.
+    </p>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <h4>Our Mission</h4>
+      <p>
+        To make financial collaboration simple and transparent for every group
+        and community across Africa.
+      </p>
+
+      <h4>Our Vision</h4>
+      <p>
+        A future where every Chama has full control and visibility over their
+        contributions and growth.
+      </p>
+
+      <h4>Our Values</h4>
+      <ul>
+        <li>Transparency in all transactions</li>
+        <li>Empowerment through technology</li>
+        <li>Trust and accountability</li>
+      </ul>
+    </div>
+
+    <div class="col-md-6">
+      <img
+        src="{% static 'images/chama_about.png' %}"
+        alt="ChamaApp"
+        class="img-fluid rounded shadow-sm"
+      />
+    </div>
+  </div>
+</div>
+{% endblock %}
