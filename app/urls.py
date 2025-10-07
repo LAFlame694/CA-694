@@ -7,6 +7,7 @@ urlpatterns = [
     path('signup/', views.signup_view, name='signup'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    path("update_user/", views.update_user, name="update_user"),
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('chama/create/', views.create_chama, name='create_chama'),
     path('chama/<int:chama_id>/add-member/', views.add_member, name='add_member'),
@@ -19,6 +20,7 @@ urlpatterns = [
     #path("transactions/", views.transaction_list, name="transactions"),
     path('withdraw/<int:chama_id>/', views.withdraw_view, name='withdraw'),
     path("transactions/", views.transactions_view, name="transactions"),
+
 
 
 

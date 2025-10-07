@@ -40,7 +40,9 @@
           <ul class="navbar-nav me-auto">
             {% if request.user.is_authenticated %}
             <li class="nav-item me-4">
-              <a href="#"><i class="fa-solid fa-circle-user"></i> Profile</a>
+              <a href="{% url 'update_user' %}"
+                ><i class="fa-solid fa-circle-user"></i> Profile</a
+              >
             </li>
             <li class="nav-item me-4">
               <a href="{% url 'dashboard' %}" class="active">

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
-from .forms import CustomUserCreationForm, ChamaForm, AddMemberForm, ContributionForm
+from .forms import CustomUserCreationForm, ChamaForm, AddMemberForm, ContributionForm, UpdateUserForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.contrib import messages
@@ -311,6 +311,23 @@ def dashboard_view(request):
         'latest_contributions': latest_contributions
     }
     return render(request, 'app/dashboard.html', context)
+# ====================================================================================================
+@login_required
+def update_user(request):
+    if request.user.is_authenticated:
+        current_user = User.objects.get(id=request.user.id)
+        user_form = UpdateUserForm(request.POST or None, instance=current_user)
+
+        if user_form.is_valid():
+            user_form.save()
+
+            login(request, current_user)
+            messages.success(request, "User Has Been updated successfully!!")
+            return redirect('dashboard')
+        return render(request, 'app/update_user.html', {'user_form': user_form})
+    else:
+        messages.error(request, "You must be logged in to update your profile.")
+        return redirect('login')
 
 # ====================================================================================================
 def signup_view(request):

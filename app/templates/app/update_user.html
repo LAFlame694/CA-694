@@ -1,0 +1,32 @@
+{% extends 'app/base.html' %}
+<!---->
+
+{% block title %}Update Profile{% endblock %}
+<!---->
+{% block content %}
+<div class="container-fluid">
+  <h2 class="mb-3">Update Profile</h2>
+
+  <!-- Filter Toggle -->
+  <div class="btn-group mb-3">
+    <form method="post">
+      {% csrf_token %}
+      <!---->
+      {{ user_form.as_p }}
+      <button type="submit" class="btn btn-secondary">Update Profile</button>
+    </form>
+  </div>
+</div>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+{% endblock %}

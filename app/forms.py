@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth import get_user_model
 from .models import CustomUser, Chama, Contribution, Member
 from django.core.exceptions import ValidationError
@@ -61,6 +61,48 @@ class ChamaForm(forms.ModelForm):
     class Meta:
         model = Chama
         fields = ['name', 'description']
+
+class UpdateUserForm(UserChangeForm):
+    password = None  # Exclude password field
+
+    # get other fields
+    email = forms.EmailField(
+        label="",
+        widget=forms.TextInput(attrs={'class':'input_field', 'placeholder':''})
+    )
+    first_name = forms.CharField(
+        label="",
+        max_length=100,
+        widget=forms.TextInput(attrs={'class':'input_field', 'placeholder':''})
+    )
+    last_name = forms.CharField(
+        label="",
+        max_length=100,
+        widget=forms.TextInput(attrs={'class':'input_field', 'placeholder':''})
+    )
+    phone_number = forms.CharField(
+        label="",
+        max_length=15,
+        widget=forms.TextInput(attrs={'class':'input_field', 'placeholder':''})
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = (
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'phone_number',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateUserForm, self).__init__(*args, **kwargs)
+
+        self.fields['username'].widget.attrs['class'] = 'input_field'
+        self.fields['username'].widget.attrs['placeholder'] = ''
+        self.fields['username'].label = ''
+        self.fields['username'].help_text = ''
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(
