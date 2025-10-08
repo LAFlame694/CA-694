@@ -190,7 +190,16 @@ table {
   margin-top: 5px;
 }
 
-/* NavBar */
+/* About Section */
+.about-section {
+  display: block;
+  padding: 50px 50px;
+}
+
+.flex {
+  display: flex;
+}
+
 
 /* dashboard */
 .dashboard {

@@ -5,43 +5,104 @@
 {% block title %}About Us{% endblock %}
 <!---->
 {% block content %}
-<div class="container">
-  <div class="text-center mb-4">
-    <h2>About ChamaApp</h2>
-    <p class="text-muted">
-      Empowering groups to save, invest, and grow together.
-    </p>
-  </div>
-
-  <div class="row">
-    <div class="col-md-6">
-      <h4>Our Mission</h4>
-      <p>
-        To make financial collaboration simple and transparent for every group
-        and community across Africa.
+<div class="container-fluid about-section">
+  <div class="about-wrapper row">
+    <div class="col-md-6 about">
+      <h2>About ChamaApp</h2>
+      <p class="text-muted">
+        At ChamaApp, we believe that great things happen when people come
+        together with a shared goal. We built this platform to make it easier
+        for groups — families, friends, and communities — to manage their
+        contributions, track progress, and achieve financial growth with
+        transparency and trust. Our goal is to bring the traditional spirit of
+        chamas into the digital age, helping members stay connected, organized,
+        and empowered. Whether you're saving for a big project, investing as a
+        team, or simply pooling resources for a brighter future, ChamaApp is
+        here to make your journey smoother, smarter, and more rewarding.
       </p>
-
-      <h4>Our Vision</h4>
-      <p>
-        A future where every Chama has full control and visibility over their
-        contributions and growth.
-      </p>
-
-      <h4>Our Values</h4>
-      <ul>
-        <li>Transparency in all transactions</li>
-        <li>Empowerment through technology</li>
-        <li>Trust and accountability</li>
-      </ul>
     </div>
 
     <div class="col-md-6">
       <img
-        src="{% static 'images/chama_about.png' %}"
+        src="{% static 'app/images/chama_about.jpg' %}"
         alt="ChamaApp"
         class="img-fluid rounded shadow-sm"
       />
     </div>
   </div>
+
+  <div class="mission-wrapper row">
+    <div class="col-md-6">
+      <img
+        src="{% static 'app/images/chama_mission.jpg' %}"
+        alt="ChamaApp"
+        class="img-fluid rounded shadow-sm"
+      />
+    </div>
+    <div class="col-md-6 mission">
+      <h4>Our Mission</h4>
+      <p>
+        Our mission is to make financial collaboration simple, transparent, and
+        empowering for every group and community across Africa. We aim to
+        provide a trusted digital space where members can save, contribute, and
+        grow together with confidence — turning collective dreams into lasting
+        impact.
+      </p>
+    </div>
+  </div>
+
+  <div class="vision-wrapper row">
+    <div class="col-md-6 vision">
+      <h4>Our Vision</h4>
+      <p>
+        We envision a future where every Chama — big or small — has full
+        control, clarity, and confidence in managing their shared goals. A
+        future where transparency builds trust, technology strengthens unity,
+        and every member can see the real impact of their contributions and
+        growth.
+      </p>
+    </div>
+
+    <div class="col-md-6">
+      <img
+        src="{% static 'app/images/chama_vision.avif' %}"
+        alt="ChamaApp"
+        class="img-fluid rounded shadow-sm"
+      />
+    </div>
+  </div>
+
+  <div class="values-wrapper row">
+    <div class="col-md-6">
+      <img
+        src="{% static 'app/images/chama_values.avif' %}"
+        alt="ChamaApp"
+        class="img-fluid rounded shadow-sm"
+      />
+    </div>
+    <div class="col-md-6 values">
+      <h4>Our Values</h4>
+      <ul>
+        <li>
+          <span>Transparency in all transactions:</span> We believe in openness
+          and honesty — every member deserves to see where every coin goes.
+        </li>
+        <li>
+          <span>Empowerment through technology:</span> Through smart technology,
+          we give groups the tools to take charge of their financial future.
+        </li>
+        <li>
+          <span>Trust and accountability:</span> We build Chamas on a foundation
+          of reliability, where every action strengthens unity and confidence.
+        </li>
+      </ul>
+    </div>
+  </div>
 </div>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
 {% endblock %}
