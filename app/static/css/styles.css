@@ -193,13 +193,44 @@ table {
 /* About Section */
 .about-section {
   display: block;
+  text-align: center;
   padding: 50px 50px;
 }
 
-.flex {
-  display: flex;
+.about-section h2 {
+  margin: 0 auto 20px auto;
+  display: inline-block;
+  position: relative;
+  margin-bottom: 50px;
 }
 
+.about-section h2::after {
+  content: ""; /* required for pseudo-elements */
+  display: block; /* makes the line appear */
+  width: 100px; /* length of the red line */
+  height: 3px; /* thickness of the line */
+  background-color: dodgerblue; /* line color */
+  margin: 5px 17px 5px 17px; /* space between heading and line */
+
+}
+
+.image {
+  border-radius: 50%;
+}
+
+.heading {
+  text-align: center;
+}
+
+.txt {
+  text-align: center;
+  line-height: 1.6;
+
+}
+
+.centering {
+  align-items: center;
+}
 
 /* dashboard */
 .dashboard {
