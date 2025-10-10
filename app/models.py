@@ -5,6 +5,16 @@ from django.core.validators import MinValueValidator
 import uuid
 
 # Create your models here.
+class SupportMessage(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.subject}"
+
 class VirtualAccount(models.Model):
     chama = models.ForeignKey("Chama", on_delete=models.CASCADE, related_name="virtual_accounts")
     member = models.ForeignKey("Member", on_delete=models.CASCADE, related_name="virtual_accounts", null=True, blank=True)

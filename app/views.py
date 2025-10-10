@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
-from .forms import CustomUserCreationForm, ChamaForm, AddMemberForm, ContributionForm, UpdateUserForm
+from .forms import CustomUserCreationForm, ChamaForm, AddMemberForm, ContributionForm, UpdateUserForm, SupportMessageForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.contrib import messages
@@ -14,6 +14,19 @@ from payments.models import Transaction, AuditLog
 User = get_user_model()
 
 # Create your views here.
+def contact_support(request):
+    if request.method == "POST":
+        form = SupportMessageForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+            messages.success(request, "Your message has been sent! Our team will get back to you soon.")
+            return redirect('contact_support')
+    else:
+        form = SupportMessageForm()
+    return render(request, 'app/contact_support.html', {'form': form})
+
+# ====================================================================================================
 def transactions_view(request):
     # get the user's chamas
     memberships = Member.objects.filter(user=request.user)
@@ -40,6 +53,7 @@ def transactions_view(request):
     }
     return render(request, 'app/transactions.html', context)
 
+# ====================================================================================================
 @login_required
 def withdraw_view(request, chama_id):
     chama = get_object_or_404(Chama, id=chama_id)
@@ -102,6 +116,7 @@ def withdraw_view(request, chama_id):
 
     return render(request, "payments/withdraw_form.html", {"chama": chama})
 
+# ====================================================================================================
 def transaction_list(request):
     # get all chamas the user belongs to
     memberships = Member.objects.filter(user=request.user)
@@ -111,6 +126,7 @@ def transaction_list(request):
     transactions = Transaction.objects.filter(chama_id__in=chama_ids).order_by('-timestamp')
     return render(request, "app/transactions.html", {"transactions": transactions})
 
+# ====================================================================================================
 def accounts_view(request):
     memberships = Member.objects.filter(user=request.user)
     chamas = [m.chama for m in memberships]
@@ -135,6 +151,7 @@ def accounts_view(request):
         })
     return render(request, "app/accounts.html", {"accounts": accounts})
 
+# ====================================================================================================
 @login_required
 def members_home(request):
     # get all memberships for this user (so you can access chama + role)
@@ -145,7 +162,7 @@ def members_home(request):
     }
     return render(request, 'app/members_home.html', context)
 
-
+# ====================================================================================================
 @login_required
 def chama_members(request, chama_id):
 
@@ -160,6 +177,7 @@ def chama_members(request, chama_id):
 
     return render(request, 'app/chama_members.html', context)
 
+# ====================================================================================================
 @login_required
 def contributions_overview(request):
     # get all groups the user belongs to

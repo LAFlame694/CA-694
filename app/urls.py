@@ -21,6 +21,7 @@ urlpatterns = [
     path('withdraw/<int:chama_id>/', views.withdraw_view, name='withdraw'),
     path("transactions/", views.transactions_view, name="transactions"),
     path('about/', views.about_view, name='about'),
+    path('contact_support/', views.contact_support, name='contact_support'),
 
 
 

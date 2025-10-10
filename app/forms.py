@@ -1,12 +1,23 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth import get_user_model
-from .models import CustomUser, Chama, Contribution, Member
+from .models import CustomUser, Chama, Contribution, Member, SupportMessage
 from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
 # create your forms here
+class SupportMessageForm(forms.ModelForm):
+    class Meta:
+        model = SupportMessage
+        fields = ['name', 'email', 'subject', 'message']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your Name'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Your Email'}),
+            'subject': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Subject'}),
+            'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Your Message'})
+        }
+
 class ContributionForm(forms.ModelForm):
     class Meta:
         model = Contribution

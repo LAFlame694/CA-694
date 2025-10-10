@@ -22,9 +22,9 @@
   </head>
   <body data-bs-theme="dark">
     <!-- NavBar Start -->
-    <nav class="navbar navbar-expand-xl navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-xxl navbar-dark bg-dark">
       <div class="container-fluid px-4 px-lg-5">
-        <a class="navbar-brand me-4" href="#">Chama App</a>
+        <a class="navbar-brand me-4 mb-3" href="#">Chama App</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -39,52 +39,59 @@
         <div class="collapse navbar-collapse" id="navbarColor04">
           <ul class="navbar-nav me-auto">
             {% if request.user.is_authenticated %}
-            <li class="nav-item me-4">
+            <li class="nav-item me-4 mb-3">
               <a href="{% url 'update_user' %}"
                 ><i class="fa-solid fa-circle-user fa-lg"></i> Profile</a
               >
             </li>
 
-            <li class="nav-item me-4">
+            <li class="nav-item me-4 mb-3">
               <a href="{% url 'dashboard' %}" class="active">
                 <i class="fa-solid fa-house fa-lg"></i> Dashboard
               </a>
             </li>
 
-            <li class="nav-item me-4">
+            <li class="nav-item me-4 mb-3">
               <a href="{% url 'transactions' %}">
                 <i class="fa-solid fa-money-bill-transfer fa-lg"></i>
                 Transactions
               </a>
             </li>
 
-            <li class="nav-item me-4">
+            <li class="nav-item me-4 mb-3">
               <a href="{% url 'accounts' %}">
                 <i class="fa-solid fa-dollar-sign fa-lg"></i> Accounts
               </a>
             </li>
 
-            <li class="nav-item me-4">
+            <li class="nav-item me-4 mb-3">
               <a href="{% url 'members_home' %}">
                 <i class="fa-solid fa-users fa-lg"></i> Members
               </a>
             </li>
 
-            <li class="nav-item me-4">
+            <li class="nav-item me-4 mb-3">
               <a href="{% url 'logout' %}">
                 <i class="fa-solid fa-right-from-bracket fa-lg"></i> Logout
               </a>
             </li>
 
+            <li class="nav-item me-4 mb-3">
+              <a href="{% url 'contact_support' %}">
+                <i class="fa-solid fa-headset fa-lg"></i>
+                Contact Support
+              </a>
+            </li>
+
             {% else %}
-            <li class="nav-item me-4">
+            <li class="nav-item me-4 mb-3">
               <a href="{% url 'login' %}">
                 <i class="fa-solid fa-right-from-bracket fa-lg"></i> Login
               </a>
             </li>
             {% endif %}
 
-            <li class="nav-item me-4">
+            <li class="nav-item me-4 mb-3">
               <a href="{% url 'about' %}">
                 <i class="fa-solid fa-circle-info fa-lg"></i> About Us
               </a>
@@ -120,6 +127,17 @@
       {% block content %}
       <!---->
       {% endblock %}
+      <footer class="mt-auto">
+        <div class="text-center">
+          <span
+            >Copyright &copy;
+            <script>
+              document.write(new Date()).getFullYear();
+            </script>
+            Chama App.</span
+          >
+        </div>
+      </footer>
     </div>
     <!-- main-content end -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
