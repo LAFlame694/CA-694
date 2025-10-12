@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('', views.home_view, name='home'),  # root path
@@ -22,9 +23,7 @@ urlpatterns = [
     path("transactions/", views.transactions_view, name="transactions"),
     path('about/', views.about_view, name='about'),
     path('contact_support/', views.contact_support, name='contact_support'),
-
-
-
+    path("support/success/", TemplateView.as_view(template_name="app/support_success.html"), name="support_success"),
 
     # password reset
     path(
