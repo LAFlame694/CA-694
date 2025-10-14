@@ -1,0 +1,40 @@
+{% extends 'app/base.html' %}
+<!---->
+{% block title %}Delete Chama{% endblock %}
+<!---->
+{% block content %}
+<div
+  class="d-flex justify-content-center align-items-center"
+  style="min-height: 100vh"
+>
+  <div
+    class="card shadow-lg border-0 p-4 text-center"
+    style="max-width: 500px; width: 100%"
+  >
+    <div class="mb-3 text-danger">
+      <i class="fa-solid fa-triangle-exclamation fa-3x"></i>
+    </div>
+
+    <h3 class="fw-bold text-danger mb-3">Delete Chama</h3>
+
+    <p>
+      Are you sure you want to permanently delete
+      <strong class="text-dark">{{ chama.name }}</strong>?
+    </p>
+    <p class="text-muted">
+      This action <strong>cannot be undone</strong>. All related data —
+      including members, contributions, and transactions — will also be deleted.
+    </p>
+
+    <form method="POST" class="mt-4">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger px-4">
+        <i class="fa-solid fa-trash"></i> Yes, Delete
+      </button>
+      <a href="{% url 'dashboard' %}" class="btn btn-secondary ms-2 px-4">
+        <i class="fa-solid fa-arrow-left"></i> Cancel
+      </a>
+    </form>
+  </div>
+</div>
+{% endblock %}

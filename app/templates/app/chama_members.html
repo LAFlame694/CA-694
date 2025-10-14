@@ -7,22 +7,44 @@
   <div class="container-wrapper">
     <h2>Members of {{ chama.name }}</h2>
 
-    <table border="1" class="table table-striped">
+    <table class="table table-striped">
       <tr>
         <th>Name</th>
         <th>Email</th>
         <th>Joined On</th>
+        <th>Actions</th>
       </tr>
       {% for member in members %}
       <tr>
         <td>{{ member.user.username }}</td>
         <td>{{ member.user.email }}</td>
-        <td>{{ member.joined_at }}</td>
+        <td>{{ member.joined_at|date:"M d, Y" }}</td>
+        <td>
+          {% if current_member.role == "leader" and member.role != "leader" %}
+          <!-- Leader removing another member -->
+          <a
+            href="{% url 'remove_member_confirm' chama.id member.id %}"
+            class="btn btn-outline-danger btn-sm"
+          >
+            <i class="fa-solid fa-user-minus"></i> Remove
+          </a>
+          {% elif current_member.role == "member" and member.user == user %}
+          <!-- Member leaving chama -->
+          <a
+            href="{% url 'leave_chama_confirm' chama.id %}"
+            class="btn btn-outline-warning btn-sm"
+          >
+            <i class="fa-solid fa-right-from-bracket"></i> Leave
+          </a>
+          {% endif %}
+        </td>
       </tr>
       {% endfor %}
     </table>
 
-    <a href="{% url 'members_home' %}">⬅ Back to My Chamas</a>
+    <a href="{% url 'members_home' %}" class="btn btn-outline-secondary mt-3">
+      ⬅ Back to My Chamas
+    </a>
   </div>
 </section>
 {% endblock %}

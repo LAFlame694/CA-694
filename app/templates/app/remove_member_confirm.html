@@ -1,0 +1,21 @@
+{% extends 'app/base.html' %}
+<!---->
+{% block title %}Remove Member{% endblock %}
+<!---->
+{% block content %}
+<div class="container-fluid text-center">
+  <h3>Remove {{ member_to_remove.user.username }}</h3>
+  <p class="text-muted">
+    Are you sure you want to remove this member from
+    <strong>{{ chama.name }}</strong>?
+  </p>
+  <form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, Remove</button>
+    <a href="{% url 'chama_members' chama.id %}" class="btn btn-secondary"
+      >Cancel</a
+    >
+  </form>
+</div>
+<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+{% endblock %}

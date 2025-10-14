@@ -1,63 +1,131 @@
-{% extends 'app/base.html' %}
+{% extends "app/base.html" %}
+<!---->
+{% load static %}
 <!---->
 {% block title %}Dashboard{% endblock %}
 <!---->
 {% block content %}
-<section class="home section">
-  <div class="container-wrapper">
-    <div class="dashboard">
-      <h4>Dashboard</h4>
-      <a href="{% url 'create_chama' %}" class="btn btn-sm btn-outline-primary ms-2">
-        Create Chama
-      </a>
+<div class="container-fluid py-4">
+  <h2 class="mb-4">Welcome, {{ user.username }}</h2>
+
+  <!-- Quick Actions -->
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="{% url 'create_chama' %}" class="btn btn-success">
+      <i class="fa-solid fa-plus"></i> Create New Chama
+    </a>
+    <a href="{% url 'contact_support' %}" class="btn btn-outline-secondary">
+      <i class="fa-solid fa-headset"></i> Contact Support
+    </a>
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="row text-center mb-4">
+    <div class="col-md-4 mb-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="text-muted">Total Chamas</h5>
+          <h3>{{ total_chamas }}</h3>
+        </div>
+      </div>
     </div>
-    <div class="dashboard-wrapper">
-      <div class="dashboard-item">
-        <h4>Total Chama Savings</h4>
-        <p>Ksh 125, 000</p>
-      </div>
-      <div class="dashboard-item">
-        <h4>My Contributions</h4>
-        <p>Ksh 1500</p>
-      </div>
-      <div class="dashboard-item">
-        <h4>Next Meeting</h4>
-        <p>15 Sep 2025</p>
-      </div>
-    </div>
-    <div class="contributions-content">
-      <div class="contributions-title">
-        <h4>Contributions</h4>
-      </div>
-      <div class="contributions-wrapper">
-        <div class="contributions">
-          <table border="1" class="table table-striped">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Member</th>
-                <th>Chama</th>
-                <th>Amount</th>
-                <th>Payment Method</th>
-              </tr>
-            </thead>
-            {% for contribution in latest_contributions %}
-            <tr>
-              <td>{{ contribution.date|date:"d M Y" }}</td>
-              <td>{{ contribution.member.user.username }}</td>
-              <td>{{ contribution.member.chama.name }}</td>
-              <td>Ksh {{ contribution.amount }}</td>
-              <td>{{ contribution.payment_method }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="5">No Contributions</td>
-            </tr>
-            {% endfor %}
-          </table>
+    <div class="col-md-4 mb-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="text-muted">Total Members</h5>
+          <h3>{{ total_members }}</h3>
         </div>
       </div>
     </div>
   </div>
-</section>
+
+  <!-- Chamas You Lead -->
+  {% if leader_chamas %}
+  <div class="mb-5">
+    <h4>Chamas You Lead</h4>
+    <div class="row">
+      {% for chama in leader_chamas %}
+      <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5>{{ chama.name }}</h5>
+            <p class="text-muted">
+              {{ chama.description|default:"No description provided." }}
+            </p>
+            <p><strong>Members:</strong> {{ chama.members.count }}</p>
+            <p>
+              <strong>Balance:</strong> Ksh
+              <!---->
+              {{ chama.balance_display|default:"0.00" }}
+            </p>
+
+            <div class="d-flex justify-content-between">
+              <a
+                href="{% url 'chama_members' chama.id %}"
+                class="btn btn-outline-primary btn-sm"
+              >
+                Manage Members
+              </a>
+              <a
+                href="{% url 'delete_chama_confirm' chama.id %}"
+                class="btn btn-outline-danger btn-sm"
+              >
+                <i class="fa-solid fa-trash"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Chamas You’re a Member Of -->
+  {% if member_chamas %}
+  <div class="mb-5">
+    <h4>Chamas You’re a Member Of</h4>
+    <div class="row">
+      {% for chama in member_chamas %}
+      <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5>{{ chama.name }}</h5>
+            <p class="text-muted">
+              {{ chama.description|default:"No description provided." }}
+            </p>
+            <p><strong>Leader:</strong> {{ chama.created_by.username }}</p>
+            <p><strong>Members:</strong> {{ chama.members.count }}</p>
+            <a
+              href="{% url 'chama_members' chama.id %}"
+              class="btn btn-outline-primary btn-sm"
+            >
+              View Details
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Recent Activity -->
+  {% if recent_transactions %}
+  <div>
+    <h4>Recent Activity</h4>
+    <ul class="list-group">
+      {% for t in recent_transactions %}
+      <li class="list-group-item">
+        <strong>{{ t.member.user.username }}</strong> contributed
+        <strong>Ksh {{ t.amount }}</strong> via {{ t.payment_method }}
+        <br />
+        <small class="text-muted">{{ t.date|date:"M d, Y H:i" }}</small>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% else %}
+  <p class="text-muted">No recent activity.</p>
+  {% endif %}
+</div>
 {% endblock %}

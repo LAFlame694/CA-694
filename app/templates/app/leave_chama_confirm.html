@@ -1,0 +1,21 @@
+{% extends 'app/base.html' %}
+<!---->
+{% block title %}Leave {{ chama.name }}{% endblock %}
+<!---->
+{% block content %}
+<div class="container-fluid text-center">
+  <h3>Leave {{ chama.name }}</h3>
+  <p class="text-muted">
+    Are you sure you want to leave this chama? You will lose access to its data
+    and transactions.
+  </p>
+  <form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, Leave</button>
+    <a href="{% url 'chama_members' chama.id %}" class="btn btn-secondary"
+      >Cancel</a
+    >
+  </form>
+</div>
+<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+{% endblock %}

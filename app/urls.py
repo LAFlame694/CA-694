@@ -24,6 +24,10 @@ urlpatterns = [
     path('about/', views.about_view, name='about'),
     path('contact_support/', views.contact_support, name='contact_support'),
     path("support/success/", TemplateView.as_view(template_name="app/support_success.html"), name="support_success"),
+    path('chama/<int:chama_id>/delete/', views.delete_chama_confirm, name="delete_chama_confirm"),
+    path('chama/<int:chama_id>/leave/', views.leave_chama_confirm, name='leave_chama_confirm'),
+    path('chama/<int:chama_id>/remove-member/<int:member_id>/', views.remove_member_confirm, name='remove_member_confirm'),
+
 
     # password reset
     path(

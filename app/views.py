@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.db.models import Sum
 from decimal import Decimal
 from django.db import transaction
+from django.http import HttpResponseForbidden
 
 from .models import Chama, Member, CustomUser, Contribution, VirtualAccount
 from payments.models import Transaction, AuditLog
@@ -14,6 +15,59 @@ from payments.models import Transaction, AuditLog
 User = get_user_model()
 
 # Create your views here.
+def leave_chama_confirm(request, chama_id):
+    chama = get_object_or_404(Chama, id=chama_id)
+    membership = get_object_or_404(Member, user=request.user, chama=chama)
+
+    # Prevent leader from leaving
+    if membership.role == 'leader':
+        messages.error(request, "You cannot leave a chama you lead. Transfer leadership first.")
+        return redirect('chama_members', chama_id=chama.id)
+
+    if request.method == 'POST':
+        membership.delete()
+        messages.success(request, f'You have successfully left {chama.name}.')
+        return redirect('dashboard')
+
+    return render(request, 'app/leave_chama_confirm.html', {'chama': chama})
+
+# ===================================================================================================
+def remove_member_confirm(request, chama_id, member_id):
+    chama = get_object_or_404(Chama, id=chama_id)
+    leader = get_object_or_404(Member, user=request.user, chama=chama, role='leader')
+    member_to_remove = get_object_or_404(Member, id=member_id, chama=chama)
+
+    # Prevent removing yourself
+    if member_to_remove.user == request.user:
+        messages.error(request, "You cannot remove yourself as leader.")
+        return redirect('chama_members', chama_id=chama.id)
+
+    if request.method == 'POST':
+        member_to_remove.delete()
+        messages.success(request, f'{member_to_remove.user.username} has been removed from {chama.name}.')
+        return redirect('chama_members', chama_id=chama.id)
+
+    return render(request, 'app/remove_member_confirm.html', {
+        'chama': chama,
+        'member_to_remove': member_to_remove
+    })
+
+# ===================================================================================================
+def delete_chama_confirm(request, chama_id):
+    chama = get_object_or_404(Chama, id=chama_id)
+
+    # check if the current user is the leader of this chama
+    if not Member.objects.filter(user=request.user, chama=chama, role='leader').exists():
+        return HttpResponseForbidden("You are not authorized to delete this Chama.")
+    
+    if request.method == 'POST':
+        chama.delete()
+        messages.success(request, "Chama deleted successfully.")
+        return redirect('dashboard')
+
+    return render(request, 'app/delete_chama_confirm.html', {'chama': chama})
+
+# ====================================================================================================
 def contact_support(request):
     if request.method == "POST":
         form = SupportMessageForm(request.POST)
@@ -165,17 +219,21 @@ def members_home(request):
 # ====================================================================================================
 @login_required
 def chama_members(request, chama_id):
-
-    # ensure user belongs to this chama before showing members
+    # Ensure user belongs to this chama before showing members
     chama = get_object_or_404(Chama, id=chama_id, members__user=request.user)
     members = Member.objects.filter(chama=chama).select_related('user')
 
+    # Get the current user's membership in this chama
+    current_member = Member.objects.get(chama=chama, user=request.user)
+
     context = {
         'chama': chama,
-        'members': members
+        'members': members,
+        'current_member': current_member,
     }
 
     return render(request, 'app/chama_members.html', context)
+
 
 # ====================================================================================================
 @login_required
@@ -315,23 +373,52 @@ def home_view(request):
 # ====================================================================================================
 @login_required
 def dashboard_view(request):
-     # Chamas created by the current user
-    chamas = Chama.objects.filter(created_by=request.user)
+    memberships = Member.objects.filter(user=request.user).select_related('chama')
 
-    # all chamas where the user is a member
-    user_chamas = Member.objects.filter(user=request.user).values_list('chama', flat=True)
+    # Separate leader and member chamas
+    leader_chamas = []
+    member_chamas = []
 
-    # get the latest 3 contributions only from those chamas
-    latest_contributions = (
-        Contribution.objects.filter(member__chama__in=user_chamas)
-        .select_related("member__user", "member__chama")
-        .order_by("-date")[:3]
+    for m in memberships:
+        chama = m.chama
+
+        # Safely get chama balance
+        first_account = chama.virtual_accounts.first()
+        chama.balance_display = first_account.balance if first_account else 0
+
+        # Sort into leader/member lists
+        if m.role == 'leader':
+            leader_chamas.append(chama)
+        else:
+            member_chamas.append(chama)
+
+    # Summary statistics
+    total_chamas = memberships.count()
+    total_members = Member.objects.filter(chama__in=[m.chama for m in memberships]).count()
+
+    # Calculate total balance across user’s chamas
+    total_balance = sum(
+        chama.balance_display for chama in leader_chamas + member_chamas
+    )
+
+    # Recent transactions (latest 5)
+    recent_transactions = (
+        Contribution.objects.filter(member__user=request.user)
+        .select_related('member', 'member__user')
+        .order_by('-date')[:5]
     )
 
     context = {
-        'chamas': chamas,
-        'latest_contributions': latest_contributions
+        'leader_chamas': leader_chamas,
+        'member_chamas': member_chamas,
+        'total_chamas': total_chamas,
+        'total_members': total_members,
+        'total_balance': total_balance,
+        'recent_transactions': recent_transactions,
     }
+    print("Context leader chamas:", leader_chamas)
+
+
     return render(request, 'app/dashboard.html', context)
 # ====================================================================================================
 @login_required
