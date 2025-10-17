@@ -8,6 +8,7 @@ from django.db.models import Sum
 from decimal import Decimal
 from django.db import transaction
 from django.http import HttpResponseForbidden
+import uuid
 
 from .models import Chama, Member, CustomUser, Contribution, VirtualAccount
 from payments.models import Transaction, AuditLog
@@ -134,7 +135,8 @@ def withdraw_view(request, chama_id):
 
             # Use atomic block to ensure balance + transaction integrity
             with transaction.atomic():
-                account = VirtualAccount.objects.filter(chama=chama, member=None).select_for_update().first()
+                account = VirtualAccount.objects.filter(chama=chama).select_for_update().first()
+
                 if not account or account.balance < amount:
                     return render(request, "payments/withdraw_form.html", {
                         "chama": chama,
@@ -148,16 +150,16 @@ def withdraw_view(request, chama_id):
                 # Record withdrawal transaction
                 txn = Transaction.objects.create(
                     chama=chama,
-                    member = member,
-                    initiated_by = request.user.username,
+                    member=member,
+                    initiated_by=request.user.username,
                     amount=amount,
-                    checkout_id=f"WITHDRAW-{chama.id}-{request.user.id}-{Transaction.objects.count()+1}",
-                    mpesa_code=f"WDR{Transaction.objects.count()+1}",
+                    checkout_id=f"WITHDRAW-{chama.id}-{request.user.id}-{uuid.uuid4().hex[:8].upper()}",
+                    mpesa_code=f"WDR-{uuid.uuid4().hex[:8].upper()}",
                     phone_number=phone,
                     status="Simulated",
                     transaction_type="withdrawal",
                 )
-                # AuditLog auto-created by signal, no manual log needed
+                # AuditLog auto-created by signal
 
             # Redirect to transaction list after success
             return redirect('transactions')
@@ -188,7 +190,7 @@ def accounts_view(request):
 
     for chama in chamas:
         # get the chama's main account
-        main_account = VirtualAccount.objects.filter(chama=chama, member=None).first()
+        main_account = VirtualAccount.objects.filter(chama=chama).first()
 
         # check if the currrent user is the leader of this chama
         is_leader = Member.objects.filter(
@@ -230,6 +232,7 @@ def chama_members(request, chama_id):
         'chama': chama,
         'members': members,
         'current_member': current_member,
+        'user': request.user,
     }
 
     return render(request, 'app/chama_members.html', context)
@@ -383,7 +386,7 @@ def dashboard_view(request):
         chama = m.chama
 
         # Safely get chama balance
-        first_account = chama.virtual_accounts.first()
+        first_account = getattr(chama, 'virtual_account', None)
         chama.balance_display = first_account.balance if first_account else 0
 
         # Sort into leader/member lists

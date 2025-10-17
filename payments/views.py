@@ -184,6 +184,7 @@ def stk_status_view(request):
 
 @csrf_exempt
 def payment_callback(request):
+    print("Received callback:", request.body)
     if request.method != "POST":
         return HttpResponseBadRequest("Only POST requests are allowed")
 
@@ -193,15 +194,16 @@ def payment_callback(request):
 
         # Only process successful payments
         if result_code == 0:
-            checkout_id = callback_data["Body"]["stkCallback"]["CheckoutRequestID"]
-            metadata = callback_data["Body"]["stkCallback"]["CallbackMetadata"]["Item"]
+            stk_data = callback_data["Body"]["stkCallback"]
+            checkout_id = stk_data["CheckoutRequestID"]
+            metadata = stk_data["CallbackMetadata"]["Item"]
 
             amount = Decimal(next(item["Value"] for item in metadata if item["Name"] == "Amount"))
             mpesa_code = next(item["Value"] for item in metadata if item["Name"] == "MpesaReceiptNumber")
             phone = next(item["Value"] for item in metadata if item["Name"] == "PhoneNumber")
             account_ref = next(item["Value"] for item in metadata if item["Name"] == "AccountReference")
 
-            # Get chama safely
+            # Get chama using the account reference
             try:
                 chama = Chama.objects.get(account_number=account_ref)
             except Chama.DoesNotExist:
@@ -210,13 +212,12 @@ def payment_callback(request):
             # Find member (optional)
             member = Member.objects.filter(chama=chama, user__phone_number=phone).first()
 
-            # Wrap all operations inside an atomic transaction
             with transaction.atomic():
-                # Save transaction
-                transaction_obj = Transaction.objects.create(
+                # Record transaction
+                txn = Transaction.objects.create(
                     chama=chama,
-                    member = member if member else None,
-                    initiated_by = member.user.username if member else "phone",
+                    member=member if member else None,
+                    initiated_by=member.user.username if member else "phone",
                     amount=amount,
                     checkout_id=checkout_id,
                     mpesa_code=mpesa_code,
@@ -224,40 +225,22 @@ def payment_callback(request):
                     status="Success",
                     transaction_type="deposit",
                 )
-                # AuditLog will be auto-created by the signal
 
-                # Update virtual account and create contribution
-                if member:
-                    # If member exists → credit their account
-                    account, _ = VirtualAccount.objects.get_or_create(
-                        chama=chama,
-                        member=member,
-                        defaults={"account_number": f"{chama.account_number}{member.id}"}
-                    )
-                    account.balance += amount
-                    account.save()
-
-                    Contribution.objects.create(
-                        member=member,
-                        amount=amount,
-                        payment_method="mpesa",
-                    )
-                else:
-                    # No member found → credit main chama account
-                    account, _ = VirtualAccount.objects.get_or_create(
-                        chama=chama,
-                        member=None,
-                        defaults={"account_number": chama.account_number}
-                    )
-                    account.balance += amount
-                    account.save()
+                # Access chama’s one-to-one virtual account
+                account = chama.virtual_accounts
+                account.balance += amount
+                account.save()
 
             return JsonResponse({"ResultCode": 0, "ResultDesc": "Payment successful"})
 
         # If not successful
-        return JsonResponse({"ResultCode": result_code, "ResultDesc": "Payment failed"})
+        return JsonResponse({
+            "ResultCode": result_code,
+            "ResultDesc": "Payment failed or cancelled"
+        })
 
     except (json.JSONDecodeError, KeyError, ValueError) as e:
         return HttpResponseBadRequest(f"Invalid request data: {str(e)}")
+
     except Exception as e:
         return HttpResponseBadRequest(f"Unexpected error: {str(e)}")

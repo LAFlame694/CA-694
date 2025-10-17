@@ -6,6 +6,7 @@
 <section class="contribution section">
   <div class="container-wrapper">
     <h2>Members of {{ chama.name }}</h2>
+    <p>Logged in as: {{ request.user.username }}</p>
 
     <table class="table table-striped">
       <tr>
@@ -27,14 +28,6 @@
             class="btn btn-outline-danger btn-sm"
           >
             <i class="fa-solid fa-user-minus"></i> Remove
-          </a>
-          {% elif current_member.role == "member" and member.user == user %}
-          <!-- Member leaving chama -->
-          <a
-            href="{% url 'leave_chama_confirm' chama.id %}"
-            class="btn btn-outline-warning btn-sm"
-          >
-            <i class="fa-solid fa-right-from-bracket"></i> Leave
           </a>
           {% endif %}
         </td>

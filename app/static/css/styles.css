@@ -64,7 +64,6 @@ body {
   border: none;
   display: inline-block;
   white-space: nowrap;
-  background: var(--btn-color);
   transition: all 0.3s ease;
 }
 

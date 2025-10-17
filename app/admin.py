@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, Chama, Member, Contribution, SupportMessage
+from .models import CustomUser, Chama, Member, Contribution, SupportMessage, VirtualAccount
 
 # Register your models here.
 class CustomUserAdmin(UserAdmin):
@@ -34,3 +34,4 @@ admin.site.register(Chama)
 admin.site.register(Member)
 admin.site.register(Contribution)
 admin.site.register(SupportMessage)
+admin.site.register(VirtualAccount)

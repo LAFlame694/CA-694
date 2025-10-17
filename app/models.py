@@ -3,6 +3,8 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.core.validators import MinValueValidator
 import uuid
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 class SupportMessage(models.Model):
@@ -16,16 +18,13 @@ class SupportMessage(models.Model):
         return f"{self.name} - {self.subject}"
 
 class VirtualAccount(models.Model):
-    chama = models.ForeignKey("Chama", on_delete=models.CASCADE, related_name="virtual_accounts")
-    member = models.ForeignKey("Member", on_delete=models.CASCADE, related_name="virtual_accounts", null=True, blank=True)
+    chama = models.OneToOneField("Chama", on_delete=models.CASCADE, related_name="virtual_accounts")
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
     # use chama.account_number
     account_number = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
-        if self.member:
-            return f"{self.chama.name} - {self.member.user.username} {self.account_number}"
         return f"{self.chama.name} Main Account ({self.account_number})"
 
 class Contribution(models.Model):
@@ -95,3 +94,11 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+
+@receiver(post_save, sender=Chama)
+def create_virtual_account(sender, instance, created, **kwargs):
+    if created and not hasattr(instance, 'Virtual_account'):
+        VirtualAccount.objects.create(
+            chama = instance,
+            account_number = instance.account_number
+        )
