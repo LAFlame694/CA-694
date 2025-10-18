@@ -48,6 +48,7 @@ body {
   padding: 0;
   background: var(--color-bg);
   font-family: "Poppins", sans-serif;
+  overflow-x: hidden; /* Prevent horizontal scroll on the whole body */
 }
 
 * {
@@ -123,6 +124,76 @@ a {
   justify-content: center;
   align-items: center;
 }
+
+/* members_home list styling */
+.list-container {
+  width: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
+
+.list-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.list-container::-webkit-scrollbar-thumb {
+  background-color: #bbb;
+  border-radius: 10px;
+}
+
+.list-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.list-group-item {
+  white-space: normal; /* prevent text from squeezing */
+  word-break: break-word;
+}
+
+/* Table Styling */
+.table-container {
+  position: relative;
+  width: 100%;
+  overflow-x: auto; /* enables horizontal scrolling if needed */
+  overflow-y: hidden; /* prevents vertical scrolling */
+  -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+  scrollbar-width: thin; /* Firefox scroll styling */
+  scrollbar-color: #ccc transparent; /* scrollbar thumb color */
+}
+
+.table-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 100%;
+  pointer-events: none; /* allows clicks to pass through */
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.05), transparent); /* fade effect */
+}
+
+/* custom scrollbar for webkit browsers (chrome, egde, safari) */
+.table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background-color: #bbb;
+  border-radius: 10px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Ensure table stays full width inside the scroll container */
+.table-container table {
+  min-width: 800px;
+}
+
+
 
 th, td {
   padding: 15px;  /* space inside the cells */
@@ -467,7 +538,7 @@ table {
   font-weight: 500;
 }
 
-@media only screen and (max-width: 564px) {
+@media (max-width: 576px) {
   .container {
     padding: 20px;
   }
@@ -475,4 +546,20 @@ table {
   .login_container {
     padding: 7.5em 1.5em 4em 1.5em;
   }
+
+  .list-group-item div {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .list-group-item .btn {
+    margin-bottom: 6px;
+    width: 100%; /* full width buttons for clarity */
+  }
+
+  .list-group-item .badge {
+    display: inline-block;
+    margin-bottom: 5px;
+  }
+
 }

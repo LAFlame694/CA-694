@@ -1,94 +1,100 @@
 {% extends 'app/base.html' %}
 <!---->
 {% block content %}
-<div class="container-fluid">
-  <h2 class="mb-3">My Transactions</h2>
+<section class="contribution section">
+  <div class="container-wrapper">
+    <div class="container-fluid">
+      <h2 class="mb-3">My Transactions</h2>
 
-  <!-- Filter Toggle -->
-  <div class="btn-group mb-3">
-    <a
-      href="?type=all"
-      class="btn btn-outline-primary {% if filter_type == 'all' %}active{% endif %}"
-      >All</a
-    >
-    <a
-      href="?type=deposit"
-      class="btn btn-outline-success {% if filter_type == 'deposit' %}active{% endif %}"
-      >Deposits</a
-    >
-    <a
-      href="?type=withdrawal"
-      class="btn btn-outline-danger {% if filter_type == 'withdrawal' %}active{% endif %}"
-      >Withdrawals</a
-    >
+      <!-- Filter Toggle -->
+      <div class="btn-group mb-3">
+        <a
+          href="?type=all"
+          class="btn btn-outline-primary {% if filter_type == 'all' %}active{% endif %}"
+          >All</a
+        >
+        <a
+          href="?type=deposit"
+          class="btn btn-outline-success {% if filter_type == 'deposit' %}active{% endif %}"
+          >Deposits</a
+        >
+        <a
+          href="?type=withdrawal"
+          class="btn btn-outline-danger {% if filter_type == 'withdrawal' %}active{% endif %}"
+          >Withdrawals</a
+        >
+      </div>
+
+      <div class="table-container">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Chama</th>
+              <th>Amount (KES)</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Mpesa Code</th>
+              <th>Reference No</th>
+              <th>Initiator</th>
+              <th>Receipts</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for txn in transactions %}
+            <tr>
+              <td>{{ txn.timestamp|date:"Y-m-d H:i" }}</td>
+              <td>{{ txn.chama.name }}</td>
+              <td>{{ txn.amount }}</td>
+              <td>{{ txn.transaction_type|title }}</td>
+              <td>{{ txn.status }}</td>
+              <td>{{ txn.mpesa_code|default:"—" }}</td>
+              <td>
+                {% for log in audit_logs %}
+                <!---->
+                {% if log.transaction.id == txn.id %}
+                <!---->
+                {{ log.reference_no }}
+                <!---->
+                {% endif %}
+                <!---->
+                {% endfor %}
+              </td>
+              <td>
+                {% if txn.member %}
+                <!---->
+                {{ txn.member.user.username }}
+                <!---->
+                {% elif txn.initiated_by %}
+                <!---->
+                {{ txn.initiated_by }}
+                <!---->
+                {% else %}
+                <!---->
+                Unknown
+                <!---->
+                {% endif %}
+              </td>
+
+              <!-- ✅ NEW COLUMN FOR RECEIPT DOWNLOAD -->
+              <td>
+                <a
+                  href="{% url 'download_receipt' txn.id %}"
+                  class="btn btn-outline-primary btn-sm"
+                >
+                  <i class="fa fa-download"></i> Download Receipt
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="8" class="text-center">No transactions found.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Chama</th>
-        <th>Amount (KES)</th>
-        <th>Type</th>
-        <th>Status</th>
-        <th>Mpesa Code</th>
-        <th>Reference No</th>
-        <th>Initiator</th>
-        <th>Receipts</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for txn in transactions %}
-      <tr>
-        <td>{{ txn.timestamp|date:"Y-m-d H:i" }}</td>
-        <td>{{ txn.chama.name }}</td>
-        <td>{{ txn.amount }}</td>
-        <td>{{ txn.transaction_type|title }}</td>
-        <td>{{ txn.status }}</td>
-        <td>{{ txn.mpesa_code|default:"—" }}</td>
-        <td>
-          {% for log in audit_logs %}
-          <!---->
-          {% if log.transaction.id == txn.id %}
-          <!---->
-          {{ log.reference_no }}
-          <!---->
-          {% endif %}
-          <!---->
-          {% endfor %}
-        </td>
-        <td>
-          {% if txn.member %}
-          <!---->
-          {{ txn.member.user.username }}
-          <!---->
-          {% elif txn.initiated_by %}
-          <!---->
-          {{ txn.initiated_by }}
-          <!---->
-          {% else %}
-          <!---->
-          Unknown
-          <!---->
-          {% endif %}
-        </td>
-
-        <!-- ✅ NEW COLUMN FOR RECEIPT DOWNLOAD -->
-        <td>
-          <a
-            href="{% url 'download_receipt' txn.id %}"
-            class="btn btn-outline-primary btn-sm"
-          >
-            <i class="fa fa-download"></i> Download Receipt
-          </a>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="8" class="text-center">No transactions found.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
+</section>
 {% endblock %}

@@ -1,40 +1,47 @@
 {% extends 'app/base.html' %}
 <!---->
 {% block content %}
-<h2>My Accounts</h2>
-<table class="table">
-  <thead>
-    <tr>
-      <th>Chama</th>
-      <th>Account Number</th>
-      <th>Balance</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for acc in accounts %}
-    <tr>
-      <td>{{ acc.chama.name }}</td>
-      <td>{{ acc.account_number }}</td>
-      <td>{{ acc.balance }}</td>
-      <td>
-        <a
-          href="{% url 'payment' acc.chama.id %}"
-          class="btn btn-primary btn-sm"
-          >Make Payment</a
-        >
-        {% if acc.is_leader %}
-        <a
-          href="{% url 'withdraw' acc.chama.id %}"
-          class="btn btn-sm btn-danger"
-          >Withdraw</a
-        >
-        {% endif %}
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<section class="contribution section">
+  <div class="container-wrapper">
+    <h2>My Accounts</h2>
+
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Chama</th>
+            <th>Account Number</th>
+            <th>Balance</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for acc in accounts %}
+          <tr>
+            <td>{{ acc.chama.name }}</td>
+            <td>{{ acc.account_number }}</td>
+            <td>{{ acc.balance }}</td>
+            <td>
+              <a
+                href="{% url 'payment' acc.chama.id %}"
+                class="btn btn-primary btn-sm"
+                >Make Payment</a
+              >
+              {% if acc.is_leader %}
+              <a
+                href="{% url 'withdraw' acc.chama.id %}"
+                class="btn btn-sm btn-danger"
+                >Withdraw</a
+              >
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
 <br />
 <br />
 <br />

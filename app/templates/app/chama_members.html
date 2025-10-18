@@ -6,34 +6,35 @@
 <section class="contribution section">
   <div class="container-wrapper">
     <h2>Members of {{ chama.name }}</h2>
-    <p>Logged in as: {{ request.user.username }}</p>
 
-    <table class="table table-striped">
-      <tr>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Joined On</th>
-        <th>Actions</th>
-      </tr>
-      {% for member in members %}
-      <tr>
-        <td>{{ member.user.username }}</td>
-        <td>{{ member.user.email }}</td>
-        <td>{{ member.joined_at|date:"M d, Y" }}</td>
-        <td>
-          {% if current_member.role == "leader" and member.role != "leader" %}
-          <!-- Leader removing another member -->
-          <a
-            href="{% url 'remove_member_confirm' chama.id member.id %}"
-            class="btn btn-outline-danger btn-sm"
-          >
-            <i class="fa-solid fa-user-minus"></i> Remove
-          </a>
-          {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-    </table>
+    <div class="table-container">
+      <table class="table table-striped">
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Joined On</th>
+          <th>Actions</th>
+        </tr>
+        {% for member in members %}
+        <tr>
+          <td>{{ member.user.username }}</td>
+          <td>{{ member.user.email }}</td>
+          <td>{{ member.joined_at|date:"M d, Y" }}</td>
+          <td>
+            {% if current_member.role == "leader" and member.role != "leader" %}
+            <!-- Leader removing another member -->
+            <a
+              href="{% url 'remove_member_confirm' chama.id member.id %}"
+              class="btn btn-outline-danger btn-sm"
+            >
+              <i class="fa-solid fa-user-minus"></i> Remove
+            </a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
 
     <a href="{% url 'members_home' %}" class="btn btn-outline-secondary mt-3">
       ⬅ Back to My Chamas
