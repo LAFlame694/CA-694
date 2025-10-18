@@ -386,7 +386,7 @@ def dashboard_view(request):
         chama = m.chama
 
         # Safely get chama balance
-        first_account = getattr(chama, 'virtual_account', None)
+        first_account = getattr(chama, 'virtual_accounts', None)
         chama.balance_display = first_account.balance if first_account else 0
 
         # Sort into leader/member lists
@@ -419,7 +419,6 @@ def dashboard_view(request):
         'total_balance': total_balance,
         'recent_transactions': recent_transactions,
     }
-    print("Context leader chamas:", leader_chamas)
 
 
     return render(request, 'app/dashboard.html', context)

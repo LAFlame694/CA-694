@@ -11,6 +11,9 @@ from django.utils.timezone import make_aware
 from decimal import Decimal
 import uuid
 from django.db import transaction
+from django.http import FileResponse, Http404
+
+from payments.utils.receipts import generate_transaction_receipt
 
 from app.models import Chama, Member, Contribution, CustomUser, VirtualAccount
 
@@ -25,6 +28,21 @@ MPESA_PASSKEY = settings.MPESA_PASSKEY
 MPESA_SHORTCODE = settings.MPESA_SHORTCODE
 CALLBACK_URL = settings.CALLBACK_URL
 MPESA_BASE_URL = settings.MPESA_BASE_URL
+
+# write your views here
+def download_receipt(request, transaction_id):
+    try:
+        transaction = Transaction.objects.get(id=transaction_id)
+    except Transaction.DoesNotExist:
+        raise Http404("Transaction not found.")
+    
+    file_path = os.path.join(settings.MEDIA_ROOT, f"receipts/receipt_{transaction.mpesa_code}.pdf")
+
+    if not os.path.exists(file_path):
+        generate_transaction_receipt(transaction)
+    
+    return FileResponse(open(file_path, 'rb'), content_type = 'application/pdf')
+
 
 # Phone number formatting and validation
 def format_phone_number(phone):
@@ -230,6 +248,10 @@ def payment_callback(request):
                 account = chama.virtual_accounts
                 account.balance += amount
                 account.save()
+
+                # generate receipt immediately after successful transaction
+                file_path = generate_transaction_receipt(txn)
+                print(f"Receipts generated at: {file_path}")
 
             return JsonResponse({"ResultCode": 0, "ResultDesc": "Payment successful"})
 
