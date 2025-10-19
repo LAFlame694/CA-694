@@ -33,12 +33,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-j8lwi+r(r(#)sxol#6pt0m+6z!t8)6arq4-eky2o0wmo^&otil'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "fallback-secret")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -131,6 +131,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+]
+
 STATICFILES_DIRS = ['static/']
 
 # Default primary key field type
