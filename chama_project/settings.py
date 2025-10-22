@@ -41,6 +41,13 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
 
+# CSRF and SSL settings for Render
+CSRF_TRUSTED_ORIGINS = ['https://ca-694.onrender.com']
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+
 
 # Application definition
 
@@ -108,6 +115,7 @@ else:
             ssl_require=True
         )
     }
+
 
 
 # Password validation
