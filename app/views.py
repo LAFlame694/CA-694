@@ -357,7 +357,7 @@ def create_chama(request):
                 chama = chama,
                 role = 'leader'
             )
-
+            messages.success(request, f'Chama "{chama.name}" created successfully!')
             return redirect('dashboard')
     else:
         form = ChamaForm()
